@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت دسته‌بندی {% endblock %}
+
+{% block content %}
+<style>
+*, *::before, *::after {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+    :root {
+        --gold: #f0c36b;
+        --bg-deep: #0b0c10;
+        --card-bg: #11141d;
+        --input-bg: #1c1f29;
+        --text-dim: #94a3b8;
+        --success: #2ecc71;
+    }
+
+    /* تیره کردن کل صفحه */
+    body {
+        background-color: var(--bg-deep) !important;
+        color: #fff;
+        margin: 0;
+    }
+
+    .form-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .form-container {
+        width: 100%;
+        max-width: 500px;
+        background: var(--card-bg);
+        border-radius: 24px;
+        padding: 40px 30px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    h2 {
+        color: #fff;
+        font-size: 1.6rem;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 800;
+    }
+
+    /* استایل پیام‌های سیستم */
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .message-item {
+        background: rgba(46, 204, 113, 0.1);
+        color: var(--success);
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(46, 204, 113, 0.2);
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    /* استایل فرم جنگو */
+    .category-form p {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .category-form label {
+        color: var(--gold);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        padding-right: 5px;
+    }
+
+    .category-form input, 
+    .category-form select, 
+    .category-form textarea {
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 14px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: 0.3s;
+        outline: none;
+    }
+
+    .category-form input:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 10px rgba(240, 195, 107, 0.1);
+    }
+
+    /* دکمه‌ها */
+    .btn-submit {
+        width: 100%;
+        background: var(--gold);
+        color: #0b0c10;
+        border: none;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+        box-shadow: 0 8px 20px rgba(240, 195, 107, 0.2);
+    }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 25px;
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+    }
+
+    .back-link:hover { color: #fff; }
+
+    /* استایل نمایش خطا */
+    .errorlist {
+        color: #ff5252;
+        list-style: none;
+        padding: 5px 0 0 0;
+        font-size: 0.8rem;
+    }
+    
+     
+        /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+</style>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+<div class="form-wrapper">
+    <div class="form-container">
+        <h2>مدیریت دسته‌بندی</h2>
+
+        
+
+        <form method="POST" class="category-form">
+            {% csrf_token %}
+            
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-submit">ذخیره دسته‌بندی</button>
+        </form>
+
+        <a href="{% url 'user_category_list' %}" class="back-link">← بازگشت به لیست</a>
+    </div>
+</div>
+
+{% endblock %}

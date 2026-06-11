@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}اطلاعات مظنه{% endblock %}
+
+{% block content %}
+<style>
+    /* ۱. بازنویسی فونت برای تمام المان‌های پایه به صورت اجباری */
+    html, body, div, span, h1, h2, h3, b, a, p, label, input, select, textarea, button {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    /* ۲. انتخاب‌گر بسیار قوی برای اطمینان از اعمال روی تمام اجزای کانتینر اطلاعات مظنه */
+    #mazane-edit-container, #mazane-edit-container * {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    :root {
+        --gold: #f0c36b;
+        --bg-deep: #0b0c10;
+        --card-bg: #11141d;
+        --input-bg: #1c1f29;
+        --text-dim: #94a3b8;
+        --success: #2ecc71;
+        --danger: #e53935;
+    }
+
+    /* تنظیمات پس‌زمینه */
+    body {
+        background-color: var(--bg-deep) !important;
+        color: #fff;
+        margin: 0;
+        direction: rtl; /* اطمینان از راست‌چین بودن */
+    }
+
+    .wrapper {
+        min-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        box-sizing: border-box;
+    }
+
+    /* کانتینر اصلی فرم */
+    .form-container {
+        width: 100%;
+        max-width: 550px;
+        background: var(--card-bg);
+        border-radius: 24px;
+        padding: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+    }
+
+    h2 {
+        color: var(--gold);
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        color: var(--text-dim);
+        text-align: center;
+        font-size: 0.9rem;
+        margin-bottom: 35px;
+    }
+
+    /* استایل فیلدهای فرم */
+    .mazane-form p {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mazane-form label {
+        color: var(--gold);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        padding-right: 5px;
+    }
+
+    .mazane-form input, 
+    .mazane-form select, 
+    .mazane-form textarea {
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 15px;
+        color: #fff;
+        font-size: 1rem;
+        transition: 0.3s;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .mazane-form input:focus,
+    .mazane-form select:focus,
+    .mazane-form textarea:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 15px rgba(240, 195, 107, 0.1);
+    }
+
+    .mazane-form select option {
+        background: var(--input-bg);
+        color: #fff;
+    }
+
+    /* بخش دکمه‌ها در پایین فرم */
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        box-sizing: border-box;
+    }
+
+    /* دکمه ثبت نهایی */
+    .submit-btn {
+        flex: 2;
+        background: var(--gold);
+        color: #0b0c10;
+        border: none;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(240, 195, 107, 0.2);
+    }
+
+    /* دکمه انصراف جدید */
+    .cancel-btn {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-dim);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: 0.3s;
+    }
+
+    .cancel-btn:hover {
+        background: rgba(255, 82, 82, 0.1);
+        color: #ff5252;
+        border-color: rgba(255, 82, 82, 0.2);
+    }
+
+    /* پیام‌های خطا */
+    .error-list {
+        background: rgba(229, 57, 53, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 0.85rem;
+        list-style: none;
+    }
+
+    /* واکنش‌گرایی برای موبایل */
+    @media (max-width: 600px) {
+        .form-container {
+            padding: 25px 20px;
+            border-radius: 18px;
+        }
+
+        .button-group {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .submit-btn, .cancel-btn {
+            width: 100% !important;
+            height: 48px;
+            padding: 0;
+        }
+    }
+    
+     /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+</style>
+
+<div id="mazane-edit-container">
+ 
+    
+    <div class="wrapper">
+        <div class="form-container">
+        
+        
+        {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+            <h2>اطلاعات مظنه</h2>
+          
+
+            <form method="POST" class="mazane-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <ul class="error-list">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="submit-btn">
+                        ذخیره و ثبت مظنه
+                    </button>
+                    <a href="{% url 'category_mazane_list' %}" class="cancel-btn">انصراف</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// اسکریپت فعال‌سازی و تزریق فونت برای رفع کامل مشکل عدم اعمال در برخی مرورگرها
+document.addEventListener("DOMContentLoaded", function() {
+    const elements = document.querySelectorAll('#mazane-edit-container, #mazane-edit-container *');
+    elements.forEach(el => {
+        el.style.setProperty('font-family', 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 'important');
+    });
+});
+</script>
+{% endblock %}

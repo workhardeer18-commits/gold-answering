@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block metadata %}
+    
+    <style>
+    
+        /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+    </style>
+    
+{% endblock %}
+{% block title %}به‌روزرسانی وضعیت سفارش{% endblock %}
+
+{% block content %}
+    
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+<h2>به‌روزرسانی وضعیت سفارش</h2>
+
+<div class="order-info">
+    <p><strong>کد سفارش:</strong> {{ order.id }}</p>
+    <p><strong>کاربر:</strong> {{ order.user }}</p>
+    <p><strong>قیمت امانت:</strong> {{ order.deposit_price }}</p>
+    <p><strong>نوع محصول:</strong> {{ order.metal_type }}</p>
+    <p><strong>وضعیت فعلی:</strong> {{ order.get_status_display }}</p>
+</div>
+
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">ثبت وضعیت</button>
+    <a href="{% url 'order_list' %}">بازگشت به لیست سفارش‌ها</a>
+</form>
+
+{% endblock %}

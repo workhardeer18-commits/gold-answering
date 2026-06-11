@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>داشبورد ادمین</title>
+
+<style>
+    *, *::before, *::after {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+ body {
+      margin: 0;
+      background: #0b0c10;
+      color: #fff;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    /* ===== Header ===== */
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(9, 10, 15, .96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      z-index: 100;
+    }
+
+    .header-inner {
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      position: relative;
+    }
+
+    .menu-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: #10131b;
+      border: 1px solid rgba(240, 195, 107, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .menu-btn span,
+    .menu-btn span::before,
+    .menu-btn span::after {
+      width: 18px;
+      height: 2px;
+      background: var(--gold, #f0c36b);
+      content: "";
+      position: absolute;
+    }
+
+    .menu-btn span::before { top: -6px; }
+    .menu-btn span::after { top: 6px; }
+    .menu-btn span { position: relative; }
+
+    .logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--gold, #f0c36b);
+      font-size: 1.8rem;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    /* ===== Layout & Cards ===== */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    /* تبدیل دیو به لینک */
+    .card {
+      background: #10131b;
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 18px;
+      padding: 24px 18px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+      transition: .25s ease;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none; /* حذف خط زیر لینک */
+      color: inherit; /* ارث‌بری رنگ متن */
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(240, 195, 107, .25);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .28);
+    }
+
+    .card .icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-size: 2rem;
+      background: linear-gradient(180deg, rgba(240, 195, 107, .18), rgba(240, 195, 107, .06));
+      border: 1px solid rgba(240, 195, 107, .18);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .card p {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, .65);
+      font-size: .92rem;
+    }
+    
+    .a2{
+        color: var(--gold, #f0c36b);
+        border: 2px solid  var(--gold, #f0c36b);
+        text-decoration: none;
+        border-radius: 25px;
+        height: 25px;
+        width: 60px;
+        text-align: center;
+    }
+    
+     .btn-add { background: #f0c36b; color: #000; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 600px) {
+      main { padding: 22px 12px 36px; }
+      .cards { grid-template-columns: 1fr; }
+      .card { min-height: 140px; padding: 20px 16px; }
+      .card .icon { width: 56px; height: 56px; font-size: 1.7rem; }
+      .card h3 { font-size: 1rem; }
+    }
+
+        /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+
+</style>
+    
+
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      
+      <a href="index.html" class="logo">Gold Shop</a>
+       <a class="logout btn-add " href="{% url 'do_logout' %}">خروج</a>
+    </div>
+  </header>
+ 
+  <main>
+      
+      {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <section class="cards">
+
+      <!-- لینک به صفحه مدیریت کاربران -->
+      <a href="{% url 'admin_users' %}" class="card">
+        <div class="icon">👥</div>
+        <h3>مدیریت کاربران</h3>
+        <p>مشاهده و مدیریت کاربران سیستم</p>
+      </a>
+
+      <!-- لینک به صفحه مدیریت سفارشات -->
+      <a href="{% url 'order_list' %}"  class="card">
+        <div class="icon">📦</div>
+        <h3>مدیریت سفارشات</h3>
+        <p>بررسی و کنترل سفارش‌های ثبت‌شده</p>
+      </a>
+
+      <!-- لینک به مدیریت دسته‌بندی کاربران -->
+      <a href="{% url 'user_category_list' %}" class="card">
+        <div class="icon">🧩</div>
+        <h3>مدیریت دسته‌بندی کاربران</h3>
+        <p>تعریف و ویرایش گروه‌های کاربری</p>
+      </a>
+
+      <!-- لینک به مدیریت محصولات -->
+      <a href="{% url 'product_list' %}" class="card">
+        <div class="icon">🛒</div>
+        <h3>مدیریت محصولات</h3>
+        <p>افزودن، ویرایش و حذف محصولات</p>
+      </a>
+        
+        
+        <a href="{% url 'category_mazane_list' %}" class="card">
+        <div class="icon">⚖️</div>
+        <h3>مدیریت مظنه محصولات</h3>
+        <p>تنظیم و به‌روزرسانی قیمت و مظنه لحظه‌ای</p>
+      </a>
+
+    </section>
+  </main>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

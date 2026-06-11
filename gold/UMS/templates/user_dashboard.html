@@ -1,0 +1,282 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> پنل کاربر</title>
+  <style>
+    
+    :root {
+      --bg: #0b0c10;
+      --card-bg: #10131b;
+      --gold: #f0c36b;
+      --text: #e7e7e7;
+      --buy-btn: #3cc668;
+      --sell-btn: #d65b6f;
+      --header-bg: rgba(9, 10, 15, 0.96);
+    }
+    
+     html, body, div, span, h1, h2, h3, b, a, p, label, input, select, textarea, button, strong, small {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.6; }
+
+    /* Header & Nav */
+    header { position: sticky; top: 0; background: var(--header-bg); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
+    .header-inner { height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+    .logo { color: var(--gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; }
+    .menu-btn { cursor: pointer; padding: 10px; background: #1a1d26; border-radius: 8px; border: 1px solid rgba(240,195,107,0.2); }
+    
+    nav { position: fixed; top: 80px; right: -250px; width: 250px; height: calc(100vh - 80px); background: #0f1320; transition: 0.3s; z-index: 999; padding: 20px; border-left: 1px solid rgba(255,255,255,0.1); }
+    nav.active { right: 0; }
+    nav a { display: block; color: #fff; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+    nav a:hover { color: var(--gold); background: rgba(255,255,255,0.02); }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 998; }
+    .overlay.active { display: block; }
+
+    /* Main Prices */
+    main { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; color: var(--gold); margin-bottom: 30px; font-size: 1.5rem; }
+    .prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+    /* Price Card Style */
+    .price-card { border: 1px solid var(--gold); background: var(--card-bg); border-radius: 15px; padding: 20px; transition: 0.3s; }
+    .price-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+    .item-header { font-size: 1.1rem; font-weight: bold; color: var(--gold); margin-bottom: 5px; text-align: center; }
+    .base-price { text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+    
+    .price-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .price-row div { flex: 1; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 1.1rem; }
+    .price-row .sell { background: rgba(214, 91, 111, 0.1); color: var(--sell-btn); border: 1px solid rgba(214, 91, 111, 0.2); }
+    .price-row .buy { background: rgba(60, 198, 104, 0.1); color: var(--buy-btn); border: 1px solid rgba(60, 198, 104, 0.2); }
+
+    .mazaneh-info { text-align: center; font-size: 0.75rem; color: var(--gold); opacity: 0.8; margin-bottom: 15px; }
+
+    .card-actions { display: flex; gap: 10px; }
+    .card-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: #fff; transition: 0.3s; }
+    .card-buy { background: var(--buy-btn); }
+    .card-sell { background: var(--sell-btn); }
+    .card-actions button:hover { opacity: 0.8; }
+
+    /* Modal Styles */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+    .modal.active { display: flex; }
+    .modal-content { background: var(--card-bg); border: 1px solid var(--gold); border-radius: 20px; width: 100%; max-width: 450px; padding: 25px; }
+    .modal h2 { color: var(--gold); text-align: center; margin-bottom: 20px; }
+    
+    label { display: block; margin-top: 15px; margin-bottom: 5px; font-size: 0.9rem; color: #aaa; }
+    input, textarea { width: 100%; background: #1a1d26; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; color: #fff; font-size: 1rem; }
+    .info-text { font-size: 0.75rem; color: #777; margin-top: 5px; }
+    
+    .modal-buttons { display: flex; gap: 10px; margin-top: 25px; }
+    .submit-btn { flex: 2; background: var(--buy-btn); border: none; padding: 15px; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; }
+    .cancel-btn { flex: 1; background: #333; border: none; padding: 15px; border-radius: 10px; color: #ccc; cursor: pointer; }
+
+    /* Preview Specific */
+    .preview-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .preview-line strong { color: var(--gold); }
+
+    /* Footer */
+    footer { background: #090a0f; padding: 40px 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; text-align: center; }
+    .brand { font-size: 1.5rem; color: var(--gold); font-weight: bold; margin-bottom: 20px; }
+    .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+    .footer-links a { color: #888; text-decoration: none; font-size: 0.9rem; }
+    .copy { font-size: 0.8rem; color: #444; }
+    
+    /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+    
+    
+  </style>
+    
+    
+    
+    
+      
+    
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="menu-btn" onclick="toggleMenu()">☰</div>
+      <div class="logo">Gold Shop</div>
+    </div>
+  </header>
+
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+  <nav id="menu">
+    <a href='{% url "order_list" %}'> سفارشات من</a>
+    <a href="{% url 'do_logout' %}" style="color: var(--sell-btn);"> خروج از حساب</a>
+  </nav>
+
+  <main>
+   {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %} 
+    <h2 class="section-title">لیست قیمت ها</h2>
+    <section class="prices">
+      {% for product in products %}
+      <div class="price-card">
+        <div class="item-header">{{ product.title }}</div>
+        <div class="base-price">قیمت پایه: {{ product.base_price|intcomma }}</div>
+        
+        <div class="price-row">
+          <div class="buy">
+             <small style="display:block; font-size: 0.7rem; opacity: 0.7;">خرید از سایت</small>
+              {% if product.can_buy_online %}
+                {{ product.display_buy_price|intcomma }}
+             {% else %}
+              <span style="color: #ff4d4d; font-weight: bold;">خرید نداریم</span>
+    {% endif %}
+           
+          </div>
+          <div class="sell">
+             <small style="display:block; font-size: 0.7rem; opacity: 0.7;">فروش به سایت</small>
+              {% if product.can_sell_online %}
+              {{ product.display_sell_price|intcomma }}
+               {% else %}
+              <span style="color: #ff4d4d; font-weight: bold;">فروش نداریم</span>
+              {% endif %}
+          </div>
+        </div>
+        
+        
+        
+
+        <div class="card-actions">
+          <button class="card-buy" onclick="openTradeModal('buy', '{{ product.id }}', '{{ product.title }}')">خرید</button>
+          <button class="card-sell" onclick="openTradeModal('sell', '{{ product.id }}', '{{ product.title }}')">فروش</button>
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+  </main>
+
+  <div id="tradeModal" class="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">فرم معامله</h2>
+      <p id="itemNameField" style="text-align:center; color: var(--gold); margin-bottom: 10px;"></p>
+      <form action="{% url 'create_order' %}" method="post">
+{% csrf_token %}
+
+<input type="hidden" name="product" id="modalProductId">
+<input type="hidden" name="trade_type" id="modalTradeType">
+
+<div id="amountField">
+<label>مبلغ معامله (ریال)</label>
+<input type="number" name="amount" placeholder="مثلاً 50,000,000">
+<p class="info-text">مبلغ نهایی بر اساس قیمت لحظه‌ای محاسبه خواهد شد.</p>
+</div>
+
+<div id="quantityField" style="display:none;">
+<label>مقدار طلا (گرم)</label>
+<input type="number" step="0.001" name="quantity" placeholder="مثلاً 10.5">
+<p class="info-text">مبلغ نهایی بر اساس قیمت لحظه‌ای محاسبه خواهد شد.</p>
+</div>
+
+<div class="modal-buttons">
+<button type="button" class="cancel-btn" onclick="closeModal()">انصراف</button>
+<button type="submit" class="submit-btn">مشاهده پیش‌فاکتور</button>
+</div>
+
+</form>
+
+    </div>
+  </div>
+
+  <!-- مودال پیش‌فاکتور با نمایش مظنه -->
+  {% if preview_mode %}
+  <div class="modal active">
+    <div class="modal-content" style="border-width: 2px;">
+      <h2>تایید نهایی معامله</h2>
+      <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+        <div class="preview-line"><span>نوع معامله:</span> <strong>{% if p_trade_type == 'buy' %}خرید از سایت{% else %}فروش به سایت{% endif %}</strong></div>
+        <div class="preview-line"><span>محصول:</span> <strong>{{ p_obj.title }}</strong></div>
+        <div class="preview-line"><span>قیمت پایه:</span> <strong>{{ p_obj.base_price|intcomma }} ریال</strong></div>
+        
+        <!-- نمایش مظنه اعمال شده در پیش فاکتور -->
+        <div class="preview-line">
+            <span>مظنه اعمال شده:</span> 
+            <strong style="color: var(--gold);">
+                {% if p_trade_type == 'buy' %}{{ p_mazaneh_buy|intcomma }}{% else %}{{ p_mazaneh_sell|intcomma }}{% endif %} ریال
+            </strong>
+        </div>
+
+        <div class="preview-line"><span>قیمت نهایی واحد:</span> <strong>{{ p_price|intcomma }} ریال</strong></div>
+        <div class="preview-line"><span>مبلغ کل معامله:</span> <strong>{{ p_amount|intcomma }} ریال</strong></div>
+        
+        <div class="preview-line" style="border:none; margin-top:10px; border-top:1px solid #333; padding-top:10px;">
+          <span style="font-size: 1.1rem;">وزن نهایی (دریافتی):</span>
+          <strong style="font-size: 1.2rem; color: var(--buy-btn);">{{ p_quantity|floatformat:3|intcomma }} گرم</strong>
+        </div>
+      </div>
+      <form method="post" action="{% url 'create_order' %}">
+        {% csrf_token %}
+        <input type="hidden" name="product" value="{{ p_obj.id }}">
+        <input type="hidden" name="amount" value="{{ p_amount }}">
+        <input type="hidden" name="trade_type" value="{{ p_trade_type }}">
+        <button type="submit" name="confirm" class="submit-btn" style="width: 100%;">ثبت و نهایی کردن سفارش</button>
+        <button type="button" class="cancel-btn" style="width: 100%; margin-top: 10px;" onclick="window.location.href='{% url "user_dashboard" %}'">لغو و بازگشت</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <footer>
+    <div class="brand">Gold Shop</div>
+    <div class="footer-links">
+      <a href='{% url "order_list" %}'> سفارشات من</a>
+      <a href="{% url 'do_logout' %}" style="color: var(--sell-btn);"> خروج از حساب</a>
+    </div>
+    <div class="copy">طراحی شده توسط شرکت مگاوب</div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('menu').classList.toggle('active');
+      document.getElementById('overlay').classList.toggle('active');
+    }
+    function openTradeModal(type, id, title) {
+
+  document.getElementById('modalProductId').value = id;
+  document.getElementById('modalTradeType').value = type;
+
+  document.getElementById('itemNameField').innerText = title;
+
+  if (type === 'buy') {
+    document.getElementById('modalTitle').innerText = 'فرم خرید';
+
+    document.getElementById('amountField').style.display = 'block';
+    document.getElementById('quantityField').style.display = 'none';
+
+  } else {
+
+    document.getElementById('modalTitle').innerText = 'فرم فروش';
+
+    document.getElementById('amountField').style.display = 'none';
+    document.getElementById('quantityField').style.display = 'block';
+
+  }
+
+  document.getElementById('tradeModal').classList.add('active');
+}
+
+    function closeModal() {
+      document.getElementById('tradeModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>

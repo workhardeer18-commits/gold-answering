@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}ورود{% endblock %}
+
+{% block content %}
+
+
+ <!-- ===== Login Form ===== -->
+    
+    
+   
+  
+  <form id="login" class="active" method="post">
+  
+   {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+  {% csrf_token %}
+    <label>نام کاربری:</label>
+    <input type="text" name="username">
+    <label>رمز عبور</label>
+    <input type="password" placeholder="••••••••" name="password">
+    <button type="submit" class="submit-btn">ورود</button>
+  
+  </form>
+    
+    
+    
+ 
+    <style>
+    :root {
+  --bg: #0b0c10;
+  --gold: #f0c36b;
+  --deep-gold: #e2ad4f;
+  --text: #e7e7e7;
+  --error: #e63946;
+}
+
+body {
+  margin: 0;
+  font-family: 'Vazir', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ===== Container ===== */
+.container {
+  background: #10131b;
+  width: 95%;
+  max-width: 400px;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(0,0,0,.3);
+  text-align: center;
+  transition: .3s;
+}
+
+/* ===== Brand ===== */
+.brand {
+  color: var(--gold);
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+/* ===== Tabs ===== */
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0 20px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  transition: .3s;
+  font-weight: 600;
+}
+
+.tab-btn.active {
+  background: var(--gold);
+  color: #000;
+}
+
+/* ===== Form ===== */
+form {
+  display: none;
+  text-align: right;
+}
+
+form.active {
+  display: block;
+  animation: fade .3s ease-in-out;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+label {
+  display: block;
+  font-size: .9rem;
+  margin: 14px 0 5px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: #181b24;
+  color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* ===== Buttons ===== */
+button.submit-btn {
+  width: 100%;
+  background: var(--gold);
+  color: #000;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 25px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .3s;
+}
+
+button.submit-btn:hover {
+  background: var(--deep-gold);
+}
+
+.link {
+  margin-top: 10px;
+  display: inline-block;
+  font-size: .85rem;
+  color: var(--gold);
+  cursor: pointer;
+}
+.link:hover { text-decoration: underline; }
+
+/* ===== Forgot Section ===== */
+#forgot-section {
+  display: none;
+}
+
+.small {
+  font-size: .8rem;
+  color: #aaa;
+  margin-bottom: 15px;
+  display: block;
+}
+
+ /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+
+/* ===== Responsive ===== */
+@media (max-width: 500px){
+  .container { padding: 25px; }
+}
+    
+    
+    </style>
+  
+    
+    <script>
+const tabBtns = document.querySelectorAll('.tab-btn');
+const forms = document.querySelectorAll('form');
+
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    tabBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    forms.forEach(f=>f.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    document.getElementById('forgot-section').style.display='none';
+  });
+});
+
+function showForgot(){
+  forms.forEach(f=>f.classList.remove('active'));
+  document.getElementById('forgot-section').style.display='block';
+}
+function backToLogin(){
+  document.getElementById('forgot-section').style.display='none';
+  document.getElementById('login').classList.add('active');
+  document.querySelector('[data-tab="login"]').classList.add('active');
+  document.querySelector('[data-tab="register"]').classList.remove('active');
+}
+</script>
+{% endblock %}

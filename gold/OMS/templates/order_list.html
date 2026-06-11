@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% block metadata %}
+    
+    <style>
+    
+        /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+    </style>
+    
+{% endblock %}
+{% load jalali_tags %}
+
+{% block title %}لیست سفارشات {% endblock %}
+
+{% block content %}
+<!-- استایل‌های صفحه -->
+<style>
+    /* ۱. بازنویسی فونت برای تمام المان‌های صفحه به صورت اجباری */
+    html, body, div, span, h2, b, a, p, b, i, .card, .container, .btn-action, .customer-name {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    /* ۲. انتخاب‌گر بسیار قوی برای اطمینان از اعمال روی همه چیز */
+    #order-page-container * {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    :root {
+        --bg: #0b0c10;
+        --gold: #f0c36b;
+        --deep-gold: #e2ad4f;
+        --text-light: #e7e7e7;
+        --green: #27b63e;
+        --card-white: #ffffff;
+        --text-dim: #94a3b8;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text-light);
+        margin: 0;
+        direction: rtl; /* اطمینان از راست‌چین بودن */
+    }
+
+    .main-wrapper {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 16px;
+        box-sizing: border-box;
+    }
+
+    /* ===== Header Section ===== */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        width: 100%;
+    }
+
+    .page-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--gold);
+        margin: 0;
+    }
+
+    .btn-add {
+        background: var(--gold);
+        color: #000;
+        text-decoration: none;
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: 0.3s;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
+    /* ===== Order Cards (White Style) ===== */
+    .order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .card {
+        background: var(--card-white);
+        color: #000;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        text-decoration: none;
+        display: block;
+        border: none;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .customer-name {
+        color: var(--gold);
+        font-weight: 800;
+        font-size: 1.15rem;
+    }
+
+    .status-badge {
+        color: var(--green);
+        font-weight: 700;
+        font-size: 0.85rem;
+        background: rgba(39, 182, 62, 0.1);
+        padding: 5px 12px;
+        border-radius: 8px;
+    }
+
+    .card-middle {
+        line-height: 2.1;
+        font-size: 0.95rem;
+        color: #222;
+    }
+
+    .card-middle b {
+        color: var(--green);
+        font-weight: 700;
+    }
+
+    .card-footer {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-id {
+        font-size: 0.8rem;
+        color: #777;
+    }
+
+    .btn-action {
+        background: var(--gold);
+        color: #000;
+        padding: 7px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    /* دکمه‌های بازگشت هماهنگ و یکنواخت برای ادمین و کاربر */
+    .back-btn, .back-btn-user {
+        display: inline-block;
+        margin: 30px 0;
+        color: var(--gold);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+    .back-btn:hover, .back-btn-user:hover {
+        color: var(--deep-gold);
+        text-decoration: none;
+    }
+    
+    /* استایل پیام‌های سیستم */
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .message-item {
+        background: rgba(46, 204, 113, 0.1);
+        color: var(--success);
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(46, 204, 113, 0.2);
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    
+    
+     /* استایل‌های وضعیت */
+    .status-badge {
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 5px 12px;
+        border-radius: 8px;
+    }
+    
+    .status-badge.status-pending { /* در انتظار بررسی = آبی */
+        color: #2196f3;
+        background: rgba(33, 150, 243, 0.1);
+    }
+
+    .status-badge.status-rejected { /* رد شده = قرمز */
+        color: #e53935;
+        background: rgba(229, 57, 53, 0.1);
+    }
+
+    .status-badge.status-approved { /* تایید شده = سبز */
+        color: #27b63e;
+        background: rgba(39, 182, 62, 0.1);
+    }
+
+    /* استایل‌های کاملا هماهنگ در موبایل */
+    @media(max-width: 600px) {
+        .main-wrapper {
+            padding: 0 12px;
+        }
+        .page-header { 
+            flex-direction: column; 
+            align-items: stretch;
+            gap: 15px; 
+            text-align: center;
+            width: 100%;
+        }
+        .page-title {
+            text-align: center;
+        }
+        .btn-add { 
+            width: 100% !important;
+            text-align: center; 
+            padding: 12px;
+            box-sizing: border-box;
+        }
+        .card {
+            width: 100% !important;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .card-footer {
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+            text-align: center;
+        }
+        .btn-action {
+            width: 100%;
+            padding: 10px 0;
+        }
+        .back-btn, .back-btn-user {
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    }
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+</style>
+
+<!-- محتوای صفحه -->
+<div id="order-page-container">
+    <div class="main-wrapper">
+        <div class="page-header">
+            <h2 class="page-title">لیست سفارشات</h2>
+            <a href="{% url 'create_order' %}" class="btn-add">+ ثبت سفارش جدید</a>
+        </div>
+
+        {% if orders %}
+            <div class="order-list">
+                {% for order in orders %}
+                <div class="card">
+                    <div class="card-top">
+                        <div class="customer-name">{{ order.user.name }} {{ order.user.last_name }}</div>
+                        {% if order.status|lower == 'pending' %}
+    <div class="status-badge status-pending">در انتظار بررسی</div>
+{% elif order.status|lower == 'rejected' or order.status|lower == 'failed' or order.status|lower == 'reject' %}
+    <div class="status-badge status-rejected">رد شده</div>
+{% elif order.status|lower == 'approved' or order.status|lower == 'accepted' or order.status|lower == 'success' %}
+    <div class="status-badge status-approved">تایید شده</div>
+{% else %}
+    <div class="status-badge">{{ order.status }}</div>
+{% endif %}
+                    </div>
+
+                    <div class="card-middle">
+                        کالا: <b>{{ order.amount }} گرم {{ order.product }}</b><br>
+                         <span>نوع معامله:</span> <strong>{% if order.trade_type == 'buy' %}خرید از سایت{% else %}فروش به سایت{% endif %}</strong><br>
+                        نام کاربری: <span>{{ order.user.username }}</span><br>
+                        شماره همراه: <span>{{ order.user.phone_number }}</span><br>
+                        مبلغ کل: <b>{{ order.final_price }} تومان</b><br>
+                        زمان ثبت: <span>{{ order.created_at|to_jalali:'%Y/%m/%d - %H:%M' }}</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="order-id">کد معامله: {{ order.id }}</span>
+                        {# شرط نمایش دکمه پاسخ فقط به سوپرادمین #}
+                        {% if request.user.is_superuser %}
+                            <a href="{% url 'edit_order' order.id %}" class="btn-action">پاسخ</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 50px; color: #555;">سفارشی یافت نشد.</div>
+        {% endif %}
+
+        {# شرط نمایش دکمه‌های بازگشت متفاوت با استایل کاملاً هماهنگ طلایی #}
+        {% if request.user.is_superuser %}
+            <a href="{% url 'admin_dashboard' %}" class="back-btn">← بازگشت به داشبورد مدیریت</a>
+        {% else %}
+            <a href="{% url 'user_dashboard' %}" class="back-btn-user">← بازگشت به پنل کاربری</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- اسکریپت اطمینان از اعمال فونت -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const elements = document.querySelectorAll('#order-page-container, #order-page-container *');
+        elements.forEach(el => {
+            el.style.setProperty('font-family', 'system-ui, -apple-system, sans-serif', 'important');
+        });
+    });
+</script>
+
+{% endblock %}

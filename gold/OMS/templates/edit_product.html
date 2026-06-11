@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %} اطلاعات محصول{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --gold: #f0c36b;
+        --bg-deep: #0b0c10;
+        --card-bg: #11141d;
+        --input-bg: #1c1f29;
+        --text-dim: #94a3b8;
+        --danger: #ff5252;
+    }
+    
+    html, body, div, span, h1, h2, h3, b, a, p, label, input, select, textarea, button {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    /* حذف سفیدی و تنظیم پس‌زمینه تیره */
+    body {
+        background-color: var(--bg-deep) !important;
+        color: #fff;
+        margin: 0;
+    }
+
+    .edit-wrapper {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+    }
+
+    .edit-container {
+        width: 100%;
+        max-width: 550px;
+        background: var(--card-bg);
+        border-radius: 24px;
+        padding: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    h2 {
+        color: #fff;
+        font-size: 1.6rem;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 800;
+    }
+
+    h2 span {
+        color: var(--gold);
+    }
+
+    /* استایل‌دهی به فیلدهای فرم جنگو */
+    .order-form p {
+        margin-bottom: 22px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .order-form label {
+        color: var(--gold);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        padding-right: 5px;
+    }
+
+    .order-form input, 
+    .order-form select, 
+    .order-form textarea {
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 14px 18px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: 0.3s;
+        outline: none;
+    }
+
+    .order-form input:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 10px rgba(240, 195, 107, 0.15);
+    }
+
+    /* چک‌باکس سفارشی (برای فیلد فعال/غیرفعال) */
+    .order-form input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--gold);
+        cursor: pointer;
+    }
+
+    /* بخش دکمه‌ها */
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 35px;
+    }
+
+    button[type="submit"] {
+        flex: 2;
+        background: var(--gold);
+        color: #0b0c10;
+        border: none;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button[type="submit"]:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+        box-shadow: 0 8px 20px rgba(240, 195, 107, 0.2);
+    }
+
+    .cancel-btn {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-dim);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: 0.3s;
+    }
+
+    .cancel-btn:hover {
+        background: rgba(255, 82, 82, 0.1);
+        color: var(--danger);
+        border-color: rgba(255, 82, 82, 0.2);
+    }
+
+    /* خطاهای فرم */
+    .errorlist {
+        color: var(--danger);
+        list-style: none;
+        padding: 5px 0;
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+
+</style>
+
+<div class="edit-wrapper">
+    <div class="edit-container">
+    
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    
+        
+    {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+        <h2>ویرایش محصول <span> {{ product.id }}</span></h2>
+
+        <form method="POST" class="order-form">
+            {% csrf_token %}
+            
+            <div class="form-fields">
+                {{ form.as_p }}
+            </div>
+
+            <div class="button-group">
+                <button type="submit">ذخیره تغییرات</button>
+                <a href="{% url 'product_list' %}" class="cancel-btn">انصراف</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

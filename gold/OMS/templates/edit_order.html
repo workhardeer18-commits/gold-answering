@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}ویرایش سفارش{% endblock %}
+
+{% block content %}
+<style>
+    /* ۱. بازنویسی فونت برای تمام المان‌های فرم به صورت اجباری */
+    html, body, div, span, h2, b, a, p, label, input, select, textarea, button {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    /* ۲. انتخاب‌گر بسیار قوی برای اطمینان از اعمال روی تمام اجزای کانتینر صفحه */
+    #edit-order-page-container, #edit-order-page-container * {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    /* تنظیمات بدنه */
+    body {
+        margin: 0;
+        background: #0b0c10;
+        color: #fff;
+        direction: rtl; /* اطمینان از راست‌چین بودن */
+    }
+
+    /* کانتینر مرکزی برای فرم */
+    .form-container {
+        max-width: 600px; /* عرض کمتر برای زیبایی و تمرکز بیشتر روی فرم */
+        margin: 40px auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+
+    /* باکس اصلی فرم */
+    .form-box {
+        background: #10131b;
+        padding: 30px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+    }
+
+    /* عنوان صفحه */
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin-top: 0;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-title span {
+        color: #f0c36b; /* رنگ طلایی برای شماره سفارش */
+    }
+
+    /* استایل‌دهی هوشمند به فیلدهای تولید شده توسط Django (form.as_p) */
+    .order-form p {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .order-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* استایل تمام اینپوت‌ها، سلکت‌باکس‌ها و متون داخل فرم */
+    .order-form input[type="text"],
+    .order-form input[type="number"],
+    .order-form input[type="email"],
+    .order-form select,
+    .order-form textarea {
+        width: 100%;
+        height: 48px;
+        background: #0b0c10;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 0 15px;
+        color: #fff;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        transition: 0.3s;
+    }
+
+    /* استایل اختصاصی برای تسکت‌اریا */
+    .order-form textarea {
+        height: 120px;
+        padding: 12px 15px;
+        resize: vertical;
+    }
+
+    /* فوکوس روی فیلدها */
+    .order-form input:focus,
+    .order-form select:focus,
+    .order-form textarea:focus {
+        outline: none;
+        border-color: #f0c36b;
+        box-shadow: 0 0 8px rgba(240, 195, 107, 0.15);
+    }
+
+    /* هماهنگ کردن پس‌زمینه آپشن‌های سلکت‌باکس در سیستم‌های مختلف */
+    .order-form select option {
+        background: #10131b;
+        color: #fff;
+    }
+
+    /* دکمه‌ها */
+    .buttons-wrapper {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        box-sizing: border-box;
+    }
+
+    .btn-submit {
+        flex: 1;
+        height: 48px;
+        background: #f0c36b;
+        color: #000;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .btn-submit:hover {
+        opacity: 0.95;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(240, 195, 107, 0.2);
+    }
+
+    .btn-cancel {
+        flex: 1;
+        height: 48px;
+        background: #2d3748;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+
+    .btn-cancel:hover {
+        background: #3d495c;
+        transform: translateY(-2px);
+    }
+
+    /* نمایش خطاهای اعتبارسنجی فرم جنگو */
+    .errorlist {
+        background: rgba(229, 57, 53, 0.1);
+        border: 1px solid #e53935;
+        color: #e53935;
+        padding: 10px 15px;
+        border-radius: 10px;
+        list-style: none;
+        margin: 0 0 20px 0;
+        font-size: 0.85rem;
+    }
+
+    /* ریسپانسیو موبایل و تبلت‌های کوچک */
+    @media (max-width: 600px) {
+        .form-container {
+            margin: 15px auto;
+            padding: 0 10px; /* کاهش فاصله بیرونی در موبایل */
+        }
+        
+        .form-box {
+            padding: 20px 15px; /* کمی پدینگ داخل فرم را فشرده‌تر می‌کنیم */
+            border-radius: 16px;
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+        }
+
+        .buttons-wrapper {
+            flex-direction: column; /* چیدن عمودی دکمه‌ها زیر هم */
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn-submit, .btn-cancel {
+            width: 100% !important; /* اعمال صد درصدی عرض */
+            height: 46px; /* بهینه‌سازی ارتفاع دکمه در موبایل */
+            font-size: 0.95rem;
+        }
+        
+        .order-form label {
+            font-size: 0.85rem;
+        }
+        
+        
+    }
+    
+    /* Alerts */
+        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
+        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
+        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+
+</style>
+    
+    
+    
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+<div id="edit-order-page-container">
+    <div class="form-container">
+        <div class="form-box">
+            <h2 class="page-title">
+                ویرایش سفارش <span>#{{ order.id }}</span>
+            </h2>
+
+            <form method="POST" class="order-form" novalidate>
+                {% csrf_token %}
+                
+                {# در صورت وجود خطا در کل فرم، این بخش نمایش داده می‌شود #}
+                {% if form.non_field_errors %}
+                    <ul class="errorlist">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {{ form.as_p }}
+                
+                <div class="buttons-wrapper">
+                    <button type="submit" class="btn-submit">ذخیره تغییرات</button>
+                    <a href="{% url 'order_list' %}" class="btn-cancel">انصراف</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- اسکریپت فعال‌سازی و تزریق فونت برای رفع کامل مشکل عدم اعمال در برخی بخش‌ها -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const elements = document.querySelectorAll('#edit-order-page-container, #edit-order-page-container *');
+        elements.forEach(el => {
+            el.style.setProperty('font-family', 'system-ui, -apple-system, sans-serif', 'important');
+        });
+    });
+</script>
+{% endblock %}
