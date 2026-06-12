@@ -3,20 +3,17 @@ from datetime import timedelta
 from celery import shared_task
 from django.utils import timezone
 import requests
-
 from OMS.models.base_price import BasePrice
 from OMS.models.product import Product
 
 
-# -----------------------------
-# تنظیمات قابل تغییر
-# -----------------------------
-SAVE_INTERVAL_MINUTES = 5       # حداقل فاصله ذخیره (دقیقه)
-MIN_PERCENT_CHANGE = Decimal("0.001")  # 0.1 درصد
+
+SAVE_INTERVAL_MINUTES = 5
+MIN_PERCENT_CHANGE = Decimal("0.001")
 
 
 @shared_task(bind=True, max_retries=3)
-def test_task(self):
+def test_task():
 
     urls = [
         "https://call3.tgju.org/ajax.json?rev=jwEkfaXjctiViQ70RAghjp0zVeWDEipltHqrQA57d5G51HHwFGq5NgBSrYgA",
@@ -33,9 +30,8 @@ def test_task(self):
 
     data = None
 
-    # -----------------------------
-    # دریافت دیتا از TGJU
-    # -----------------------------
+
+
     for url in urls:
         try:
             response = requests.get(url, headers=headers, timeout=15)
@@ -44,10 +40,10 @@ def test_task(self):
             print(f"✅ TGJU connected")
             break
         except Exception as e:
-            print(f"❌ Failed URL -> {e}")
+            print(f"Failed URL -> {e}")
 
     if not data:
-        print("❌ All TGJU endpoints failed")
+        print("All TGJU endpoints failed")
         return
 
     current_data = data.get("current", {})
@@ -63,9 +59,7 @@ def test_task(self):
                 except Exception:
                     continue
 
-    # -----------------------------
-    # بروزرسانی دیتابیس
-    # -----------------------------
+
     now = timezone.now()
     updated_count = 0
     skipped_count = 0
@@ -80,7 +74,7 @@ def test_task(self):
 
         last_record = product.base_prices.order_by("-created_at").first()
 
-        # اگر اولین بار است
+
         if not last_record:
             BasePrice.objects.create(product=product, price=new_price)
             updated_count += 1
@@ -89,7 +83,7 @@ def test_task(self):
         price_changed = last_record.price != new_price
         time_passed = (now - last_record.created_at) > timedelta(minutes=SAVE_INTERVAL_MINUTES)
 
-        # درصد تغییر
+
         if last_record.price > 0:
             percent_change = abs(new_price - last_record.price) / last_record.price
         else:

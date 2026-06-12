@@ -1,24 +1,30 @@
-
 from celery.schedules import crontab
 from pathlib import Path
+import environ
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@fvti6)@ea=+2+dg3h1jjk*^kz&v^4yenku7_bjm)jct5$)z0*'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+# load .env if exists
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    environ.Env.read_env(env_file)
 
 
-# Application definition
+# SECURITY
+SECRET_KEY = env("SECRET_KEY", default="unsafe-secret-key")
+
+DEBUG = env("DEBUG")
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
+
+# Applications
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -27,12 +33,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.humanize',
+
     'OMS',
     'Base',
     'UMS',
-    'django.contrib.humanize',
     'jalali_date',
-
 ]
 
 MIDDLEWARE = [
@@ -64,20 +71,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gold.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgres://postgres:postgres@localhost:5432/gold"
+    )
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'UMS.User'
+LOGIN_URL = 'do_login'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -94,10 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -107,37 +107,27 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATIC_URL = 'static/'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'UMS.User'
+CELERY_BROKER_URL = env(
+    "CELERY_BROKER_URL",
+    default="redis://127.0.0.1:6379/0"
+)
 
-LOGIN_URL = 'do_login'
-
-
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/1"
+CELERY_RESULT_BACKEND = env(
+    "CELERY_RESULT_BACKEND",
+    default="redis://127.0.0.1:6379/1"
+)
 
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 
-
-
-
 CELERY_BEAT_SCHEDULE = {
-    "fetch-every-minute": {
+    "fetch-every-5-seconds": {
         "task": "OMS.tasks.task.test_task",
         "schedule": 5.0,
     },
 }
-
-CELERY_WORKER_POOL = "solo"
-
-
-
-
-
-
-
