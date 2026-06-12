@@ -12,7 +12,7 @@ SAVE_INTERVAL_MINUTES = 5
 MIN_PERCENT_CHANGE = Decimal("0.001")
 
 
-@shared_task(bind=True, max_retries=3)
+@shared_task(max_retries=3)
 def test_task():
 
     urls = [
