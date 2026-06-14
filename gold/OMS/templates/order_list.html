@@ -47,11 +47,11 @@
     }
 
     .main-wrapper {
-        max-width: 800px;
-        margin: 20px auto;
-        padding: 0 16px;
-        box-sizing: border-box;
-    }
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 16px;
+}
+
 
     /* ===== Header Section ===== */
     .page-header {
@@ -89,6 +89,8 @@
         gap: 16px;
         width: 100%;
     }
+    
+    
 
     .card {
         background: var(--card-white);
@@ -219,47 +221,38 @@
         background: rgba(39, 182, 62, 0.1);
     }
 
-    /* استایل‌های کاملا هماهنگ در موبایل */
-    @media(max-width: 600px) {
-        .main-wrapper {
-            padding: 0 12px;
-        }
-        .page-header { 
-            flex-direction: column; 
-            align-items: stretch;
-            gap: 15px; 
-            text-align: center;
-            width: 100%;
-        }
-        .page-title {
-            text-align: center;
-        }
-        .btn-add { 
-            width: 100% !important;
-            text-align: center; 
-            padding: 12px;
-            box-sizing: border-box;
-        }
-        .card {
-            width: 100% !important;
-            padding: 16px;
-            box-sizing: border-box;
-        }
-        .card-footer {
-            flex-direction: column;
-            gap: 12px;
-            align-items: stretch;
-            text-align: center;
-        }
-        .btn-action {
-            width: 100%;
-            padding: 10px 0;
-        }
-        .back-btn, .back-btn-user {
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-        }
+   @media (max-width: 600px) {
+       
+
+    .main-wrapper {
+        padding: 0 14px;
+    }
+
+    .page-title{
+        font-size: 1.2rem;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .card-middle{
+        font-size: 0.95rem;
+        line-height: 2.2;
+    }
+
+    .btn-action{
+        width:100%;
+        padding:12px 0;
+    }
+
+    .btn-add{
+        font-size:0.95rem;
+        padding:12px;
+    }
+
+}
+
     }
     
     {% if messages %}

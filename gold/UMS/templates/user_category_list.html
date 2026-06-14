@@ -149,6 +149,46 @@
         .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
         .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
 
+        @media (max-width: 600px){
+
+    .container{
+        padding: 16px 12px 80px;
+    }
+
+    .top-header{
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        text-align:center;
+    }
+
+    .page-title{
+        font-size:1.3rem;
+    }
+
+    .add-btn{
+        width:100%;
+        text-align:center;
+        padding:12px;
+        font-size:.9rem;
+    }
+
+    .category-card{
+        padding:18px;
+    }
+
+    .card-actions{
+        flex-direction:column;
+    }
+
+    .edit-btn,
+    .delete-btn{
+        width:100%;
+        padding:12px;
+    }
+
+}
+
 </style>
 
 <div class="container">

@@ -25,7 +25,7 @@
     }
 
     .form-wrapper {
-        min-height: 90vh;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -142,10 +142,42 @@
         .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
         .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
 
+@media (min-width:700px) and (max-width:1000px){
+
+    .form-wrapper{
+        padding:15px;
+        align-items:flex-start;
+        padding-top:40px;
+    }
+
+    .form-container{
+        padding:28px 20px;
+        border-radius:18px;
+    }
+
+    h2{
+        font-size:1.3rem;
+        margin-bottom:25px;
+    }
+
+    .order-form input,
+    .order-form select,
+    .order-form textarea{
+        padding:12px 14px;
+        font-size:.9rem;
+    }
+
+    button[type="submit"]{
+        padding:14px;
+        font-size:.95rem;
+    }
+
+}
+
     </style>
     
     
-</style>
+
 
 <div class="form-wrapper">
     <div class="form-container">
