@@ -297,7 +297,7 @@
                         نام کاربری: <span>{{ order.user.username }}</span><br>
                         شماره همراه: <span>{{ order.user.phone_number }}</span><br>
                         مبلغ کل: <b>{{ order.final_price }} تومان</b><br>
-                        زمان ثبت: <span>{{ order.created_at|to_jalali:'%Y/%m/%d - %H:%M' }}</span>
+                        زمان ثبت: <span>{{ order.created_at|to_jalali:'%Y/%m/%d' }} - {{ order.created_at|date:'H:i' }}</span>
                     </div>
 
                     <div class="card-footer">
