@@ -3,11 +3,12 @@ from OMS.views import category_mazane_list, create_product, create_product_categ
     delete_product, \
     delete_product_category, edit_category_mazaneh, edit_order, \
     edit_product, edit_product_category, live_prices, order_list, \
-    create_order, product_category_list
+    create_order, product_category_list, zaryar_prices_webhook
 
 
 from OMS.views.product_list import product_list
 from OMS.views.create_category_mazane import create_category_mazaneh
+from OMS.views.zaryar_webhook import zaryar_prices_webhook
 
 urlpatterns = [
 
@@ -52,6 +53,12 @@ path(
 ),
 
     path("live-prices/", live_prices, name="live_prices"),
+
+
+
+
+
+    path("webhooks/zaryar/prices/", zaryar_prices_webhook, name="zaryar_prices_webhook"),
 
 
 ]

@@ -23,6 +23,11 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
+ZARYAR_ALLOWED_IPS = env.list(
+    "ZARYAR_ALLOWED_IPS",
+    default=["127.0.0.1"],
+)
+
 
 # Applications
 
@@ -131,3 +136,6 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": 5.0,
     },
 }
+
+
+

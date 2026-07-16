@@ -11,7 +11,6 @@ from OMS.models.product import Product
 
 
 REQUIRED_FIELDS = {
-    "ProductId",
     "Title",
     "BuyPrice",
     "SellPrice",
@@ -36,13 +35,19 @@ def _to_decimal(value):
     return Decimal(str(value))
 
 
+def _get_product_id(item):
+    if "ProductId" in item:
+        return item["ProductId"]
+    return item.get("Id")
+
+
 @csrf_exempt
 @require_POST
 def zaryar_prices_webhook(request):
     client_ip = _get_client_ip(request)
-    allowed_ips = settings.ZARYAR_ALLOWED_IPS
+    allowed_ips = getattr(settings, "ZARYAR_ALLOWED_IPS", [])
 
-    if allowed_ips and client_ip not in allowed_ips:
+    if allowed_ips and "*" not in allowed_ips and client_ip not in allowed_ips:
         return JsonResponse(
             {
                 "status": "error",
@@ -62,7 +67,6 @@ def zaryar_prices_webhook(request):
             status=400,
         )
 
-    # زریار گفته همه محصولات را در یک درخواست می‌فرستد.
     if not isinstance(payload, list):
         return JsonResponse(
             {
@@ -87,18 +91,18 @@ def zaryar_prices_webhook(request):
             result["invalid"] += 1
             continue
 
-        if not REQUIRED_FIELDS.issubset(item):
+        product_id = _get_product_id(item)
+
+        if product_id is None or not REQUIRED_FIELDS.issubset(item):
             result["invalid"] += 1
             continue
 
-        # bool در پایتون زیرمجموعه int است؛ بنابراین جداگانه رد می‌شود.
-        if isinstance(item["ProductId"], bool):
-
+        if isinstance(product_id, bool):
             result["invalid"] += 1
             continue
 
         try:
-            zaryar_id = int(item["ProductId"])
+            zaryar_id = int(product_id)
             buy_price = _to_decimal(item["BuyPrice"])
             sell_price = _to_decimal(item["SellPrice"])
             base_price = _to_decimal(item["BasePrice"])
@@ -119,19 +123,23 @@ def zaryar_prices_webhook(request):
             result["invalid"] += 1
             continue
 
+        # عنوان دریافتی از زریار را برای مرجع بعدی ذخیره می‌کنیم.
+        incoming_title = str(item["Title"]).strip()
+        if incoming_title and product.zaryar_title != incoming_title:
+            product.zaryar_title = incoming_title
+            product.save(update_fields=["zaryar_title"])
+
         if not item["MarketIsOpen"]:
             result["market_closed"] += 1
             continue
 
-        # تا زمان شفاف‌شدن فرمول زریار، BasePrice را بدون محاسبه ذخیره می‌کنیم.
         selected_price = base_price
 
-        # فیلد price اعشار ندارد؛ پس قیمت پایه باید عدد صحیح باشد.
         if selected_price != selected_price.to_integral_value():
             result["invalid"] += 1
             continue
 
-        latest_price = product.base_prices.first()
+        latest_price = product.base_prices.order_by("-created_at").first()
 
         if (
             latest_price is not None
@@ -144,7 +152,7 @@ def zaryar_prices_webhook(request):
 
         BasePrice.objects.create(
             product=product,
-            price=selected_price,
+            price=int(selected_price),
             zaryar_buy_price=buy_price,
             zaryar_sell_price=sell_price,
         )

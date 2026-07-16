@@ -18,6 +18,22 @@ class BasePrice(models.Model):
         auto_now_add=True
     )
 
+    zaryar_buy_price = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="قیمت خرید زریار"
+    )
+
+    zaryar_sell_price = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="قیمت فروش زریار"
+    )
+
     class Meta:
         ordering = ["-created_at"]
 

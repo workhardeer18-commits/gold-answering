@@ -3,23 +3,21 @@ from decimal import Decimal
 
 
 PRODUCTS = [
-    {"title": "سکه امامی تک فروشی", "endpoint": "retail_sekee"},
-    {"title": "سکه بهار آزادی تک فروشی", "endpoint": "retail_sekeb"},
-    {"title": "نیم سکه تک فروشی", "endpoint": "retail_nim"},
-    {"title": "ربع سکه تک فروشی", "endpoint": "retail_rob"},
-    {"title": "سکه گرمی تک فروشی", "endpoint": "retail_gerami"},
-    {"title": "ربع سکه", "endpoint": "rob"},
-    {"title": "سکه امامی", "endpoint": "sekee"},
-    {"title": "سکه بهار آزادی", "endpoint": "sekeb"},
-    {"title": "نیم سکه", "endpoint": "nim"},
-    {"title": "سکه گرمی", "endpoint": "gerami"},
-    {"title": "طلا 18 عیار", "endpoint": "geram18"},
-    {"title": "گرم نقره 999", "endpoint": "silver_999"},
-    {"title": "مثقال طلا", "endpoint": "mesghal"},
-    {"title": "آب شده معاملاتی", "endpoint": "gold_melted_transfer"},
-    {"title": "آب شده نقدی", "endpoint": "gold_futures"},
-    {"title": "مثقال بدون حباب", "endpoint": "gold_17"},
+    {"title": "سکه تاریخ پایین", "endpoint": "zaryar_low_date_coin"},
+    {"title": "ربع تاریخ پایین", "endpoint": "zaryar_low_date_quarter"},
+    {"title": "نیم تاریخ پایین", "endpoint": "zaryar_low_date_half"},
+    {"title": "ربع سکه عادی", "endpoint": "zaryar_regular_quarter"},
+    {"title": "ساچمه نقره 995", "endpoint": "zaryar_silver_shot_995"},
+    {"title": "شمش نقره 1000 گرمی نادیر ترکیه", "endpoint": "zaryar_nadir_1000"},
+    {"title": "ساچمه نقره 999/9", "endpoint": "zaryar_silver_shot_9999"},
+    {"title": "ساچمه نقره 990", "endpoint": "zaryar_silver_shot_990"},
+    {"title": "شمش نقره 1000 گرمی 999.9 اماراتی", "endpoint": "zaryar_emirates_9999_1000"},
+    {"title": "شمش نقره 1000 گرمی 999 اماراتی", "endpoint": "zaryar_emirates_999_1000"},
+    {"title": "ربع سکه 1404", "endpoint": "zaryar_quarter_1404"},
+    {"title": "آبشده نقد فردا طلانت", "endpoint": "zaryar_talant_cash_tomorrow"},
+    {"title": "تمام سکه 1404", "endpoint": "zaryar_full_coin_1404"},
 ]
+
 
 
 # 🔹 دیکشنری سریع برای lookup
@@ -30,6 +28,20 @@ TITLE_ENUM = [(p["title"], p["title"]) for p in PRODUCTS]
 
 
 class Product(models.Model):
+    zaryar_id = models.IntegerField(
+        null=True,
+        blank=True,
+        unique=True,
+        verbose_name="شناسه محصول در زریار"
+    )
+
+    zaryar_title = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name="عنوان محصول در زریار"
+    )
+
     title = models.CharField(max_length=255, choices=TITLE_ENUM)
     can_buy_online = models.BooleanField(
         default=True,
