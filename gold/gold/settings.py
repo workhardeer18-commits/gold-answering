@@ -23,10 +23,10 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
-ZARYAR_ALLOWED_IPS = env.list(
-    "ZARYAR_ALLOWED_IPS",
-    default=["127.0.0.1"],
-)
+ZARYAR_ALLOWED_IPS = [
+    "194.60.230.192",
+    "103.215.223.41",
+]
 
 
 # Applications
