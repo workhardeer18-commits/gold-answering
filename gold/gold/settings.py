@@ -26,8 +26,9 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 ZARYAR_ALLOWED_IPS = [
     "194.60.230.192",
     "103.215.223.41",
-]
+"185.139.34.15",
 
+]
 
 # Applications
 

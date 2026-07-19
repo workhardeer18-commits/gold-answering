@@ -11,7 +11,9 @@ class BasePrice(models.Model):
 
     price = models.DecimalField(
         max_digits=20,
-        decimal_places=0
+        decimal_places=0,
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(

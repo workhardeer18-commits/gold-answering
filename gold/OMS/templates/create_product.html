@@ -68,8 +68,8 @@
     }
 
     /* تیره کردن فیلدهای ورودی */
-    .order-form input, 
-    .order-form select, 
+    .order-form input,
+    .order-form select,
     .order-form textarea {
         background: var(--input-bg);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -135,7 +135,7 @@
         font-size: 0.8rem;
         margin: 0;
     }
-    
+
        /* Alerts */
         .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
@@ -175,13 +175,13 @@
 }
 
     </style>
-    
-    
+
+
 
 
 <div class="form-wrapper">
     <div class="form-container">
-        
+
     {% if messages %}
         {% for message in messages %}
             <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
@@ -190,13 +190,13 @@
             </div>
         {% endfor %}
     {% endif %}
-    
-    
+
+
         <h2>ایجاد محصول جدید</h2>
 
         <form method="POST" class="order-form">
             {% csrf_token %}
-            
+
             {# تمام فیلدها به صورت خودکار استایل می‌گیرند #}
             {{ form.as_p }}
 

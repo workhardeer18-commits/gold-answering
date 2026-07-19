@@ -1,7 +1,6 @@
 from django.db import models
 from decimal import Decimal
 
-
 PRODUCTS = [
     {"title": "سکه تاریخ پایین", "endpoint": "zaryar_low_date_coin"},
     {"title": "ربع تاریخ پایین", "endpoint": "zaryar_low_date_quarter"},
@@ -18,8 +17,6 @@ PRODUCTS = [
     {"title": "تمام سکه 1404", "endpoint": "zaryar_full_coin_1404"},
 ]
 
-
-
 # 🔹 دیکشنری سریع برای lookup
 PRODUCT_MAP = {p["title"]: p["endpoint"] for p in PRODUCTS}
 
@@ -28,7 +25,9 @@ TITLE_ENUM = [(p["title"], p["title"]) for p in PRODUCTS]
 
 
 class Product(models.Model):
-    zaryar_id = models.IntegerField(
+    # اضافه کردن فیلد برای شناسه زریار
+    zaryar_id = models.CharField(
+        max_length=50,  # طول مناسب برای ID زریار
         null=True,
         blank=True,
         unique=True,
@@ -51,6 +50,7 @@ class Product(models.Model):
         default=True,
         verbose_name="امکان فروش آنلاین توسط کاربر"
     )
+    # endpoint را نگه می‌داریم چون شاید جایی استفاده شده باشد، اما برای دریافت قیمت استفاده نمی‌شود
     endpoint = models.CharField(
         max_length=255,
         unique=True,

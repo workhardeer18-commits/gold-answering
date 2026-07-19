@@ -1,39 +1,55 @@
+from OMS.models.base_price import BasePrice
 from OMS.models.category_product_mazaneh import CategoryProductMazaneh
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from OMS.models.order import Order
 from OMS.models.product import Product
 
+
 def get_user_specific_prices(user, product):
-    base = product.base_price
+    base_price_obj = BasePrice.objects.filter(
+        product=product
+    ).order_by("-created_at").first()
 
-    # ۲. پیدا کردن تنظیمات مظنه برای این کاربر و این محصول
-    try:
-        mazaneh_entry = CategoryProductMazaneh.objects.filter(
-            category=user.category,
-            product=product
-        ).first()
-    except:
-        mazaneh_entry = None
+    if not base_price_obj:
+        return None
 
-    # ۳. تعیین مقادیر اختلاف (Offset) از فیلدهای جدید مدل شما
-    buy_offset = mazaneh_entry.buy_mazaneh if (mazaneh_entry and mazaneh_entry.buy_mazaneh) else Decimal("0")
-    sell_offset = mazaneh_entry.sell_mazaneh if (mazaneh_entry and mazaneh_entry.sell_mazaneh) else Decimal("0")
+    if (
+        base_price_obj.zaryar_buy_price is None or
+        base_price_obj.zaryar_sell_price is None
+    ):
+        return None
 
-    price_to_buy_from_us = base + sell_offset  # نرخ فروش واحد (مشتری می‌خرد)
-    price_to_sell_to_us = base - buy_offset  # نرخ خرید واحد (مشتری می‌فروشد)
+    mazaneh_entry = CategoryProductMazaneh.objects.filter(
+        category=user.category,
+        product=product
+    ).first()
+
+    buy_offset = (
+        mazaneh_entry.buy_mazaneh
+        if (mazaneh_entry and mazaneh_entry.buy_mazaneh is not None)
+        else Decimal("0")
+    )
+    sell_offset = (
+        mazaneh_entry.sell_mazaneh
+        if (mazaneh_entry and mazaneh_entry.sell_mazaneh is not None)
+        else Decimal("0")
+    )
+
+    zaryar_buy = base_price_obj.zaryar_buy_price
+    zaryar_sell = base_price_obj.zaryar_sell_price
+
+    price_to_buy_from_us = zaryar_sell + sell_offset
+    price_to_sell_to_us = max(zaryar_buy - buy_offset, Decimal("0"))
 
     return {
-        'price_to_buy': price_to_buy_from_us,
-        'price_to_sell': price_to_sell_to_us,
-        'buy_offset': buy_offset,
-        'sell_offset': sell_offset
+        "price_to_buy": price_to_buy_from_us,
+        "price_to_sell": price_to_sell_to_us,
+        "buy_offset": buy_offset,
+        "sell_offset": sell_offset,
     }
-
-
-
 
 
 @login_required
@@ -52,17 +68,16 @@ def create_order(request):
     product = get_object_or_404(Product, id=product_id)
 
     user_prices = get_user_specific_prices(request.user, product)
+    if not user_prices:
+        messages.error(request, "قیمت این محصول در حال حاضر در دسترس نیست.")
+        return redirect("user_dashboard")
 
-    # -----------------------
-    # ✅ BUY (کاربر مبلغ وارد می‌کند)
-    # -----------------------
     if trade_type == "buy":
-
         raw_amount = request.POST.get("amount", "0")
 
         try:
             amount = Decimal(raw_amount)
-        except:
+        except (InvalidOperation, ValueError, TypeError):
             messages.error(request, "مبلغ نامعتبر است.")
             return redirect("user_dashboard")
 
@@ -74,16 +89,12 @@ def create_order(request):
 
         quantity = amount / final_price
 
-    # -----------------------
-    # ✅ SELL (کاربر مقدار طلا وارد می‌کند)
-    # -----------------------
     elif trade_type == "sell":
-
         raw_quantity = request.POST.get("quantity", "0")
 
         try:
             quantity = Decimal(raw_quantity)
-        except:
+        except (InvalidOperation, ValueError, TypeError):
             messages.error(request, "مقدار طلا نامعتبر است.")
             return redirect("user_dashboard")
 
@@ -95,18 +106,11 @@ def create_order(request):
 
         amount = quantity * final_price
 
-    # -----------------------
-    # ✅ اگر trade_type اشتباه بود
-    # -----------------------
     else:
         messages.error(request, "نوع معامله نامعتبر است.")
         return redirect("user_dashboard")
 
-    # -----------------------
-    # ✅ ثبت نهایی
-    # -----------------------
     if "confirm" in request.POST:
-
         Order.objects.create(
             user=request.user,
             product=product,
@@ -121,9 +125,6 @@ def create_order(request):
         messages.success(request, "سفارش با موفقیت ثبت شد.")
         return redirect("user_dashboard")
 
-    # -----------------------
-    # ✅ حالت پیش‌نمایش
-    # -----------------------
     return render(request, "create_order.html", {
         "show_result": True,
         "final_price": final_price,
