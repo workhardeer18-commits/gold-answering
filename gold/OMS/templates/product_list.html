@@ -277,27 +277,30 @@
     <div class="products-grid">
         {% for product in products %}
         <div class="product-card">
-            <h3>{{ product.title }}</h3>
-            
-            
+    <h3>{{ product.title }}</h3>
+    
+    <!-- نمایش قیمت خرید -->
+    <div class="product-detail">
+        <span class="detail-label">قیمت خرید از ما</span>
+        <span class="price-value" id="price-{{ product.id }}">
+            {{ product.current_buy_price }} تومان
+        </span>
+    </div>
 
-            <div class="product-detail">
-                <span class="detail-label">قیمت لحظه‌ای</span>
-                <span class="price-value" id="price-{{ product.id }}">
-               {{ product.base_price }} تومان
-               </span>
+    <!-- نمایش قیمت فروش -->
+   <div class="product-detail">
+    <span class="detail-label">قیمت فروش به ما</span>
+    <span class="price-value" id="price-sell-{{ product.id }}">
+        {{ product.current_sell_price }} تومان
+    </span>
+</div>
 
-
-            </div>
-
-          
-
-            {% if request.user.is_staff %}
-            <div class="card-actions">
-                <a href="{% url 'edit_product' product.id %}" class="btn-edit">ویرایش محصول</a>
-                <a href="{% url 'delete_product' product.id %}" class="btn-delete">حذف</a>
-            </div>
-            {% endif %}
+       {% if request.user.is_staff %}
+    <div class="card-actions">
+        <a href="{% url 'edit_product' product.id %}" class="btn-edit">ویرایش محصول</a>
+        <a href="{% url 'delete_product' product.id %}" class="btn-delete">حذف</a>
+    </div>
+    {% endif %}
         </div>
         {% empty %}
             <div style="text-align: center; grid-column: 1/-1; padding: 50px; color: var(--text-dim);">
@@ -317,34 +320,81 @@ function toggleStatus(productId) {
     // در اینجا می‌توانید با استفاده از fetch یک درخواست به ویو جنگو بفرستید تا تغییر در دیتابیس ذخیره شود.
 }
 
+function formatNumber(value) {
+    if (value === null || value === undefined || value === "") {
+        return null;
+    }
+
+    const num = Number(value);
+
+    if (Number.isNaN(num)) {
+        return String(value);
+    }
+
+    return num.toLocaleString("fa-IR");
+}
+
+function updatePriceElement(element, value) {
+    if (!element) {
+        return;
+    }
+
+    const formattedValue = formatNumber(value);
+
+    let newText;
+    let shouldAnimate = false;
+
+    if (formattedValue === null) {
+        // اگر مقدار null بود، "ناموجود" را نمایش بده
+        newText = "ناموجود";
+    } else {
+        // اگر مقدار عددی بود، فرمت کن و " تومان" را اضافه کن
+        newText = formattedValue + " تومان";
+        shouldAnimate = true; // فقط اگر مقدار عددی بود انیمیشن اعمال شود
+    }
+
+    if (element.innerText.trim() !== newText) {
+        element.innerText = newText;
+        if (shouldAnimate) {
+            element.classList.add("price-update");
+            setTimeout(() => {
+                element.classList.remove("price-update");
+            }, 800);
+        } else {
+            // اگر مقدار ناموجود بود، انیمیشن را حذف کن
+            element.classList.remove("price-update");
+        }
+    }
+}
 
 function fetchPrices() {
-    fetch("/OMS/live-prices/")
-        .then(response => response.json())
+    fetch("{% url 'live_prices' %}", {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            return response.json();
+        })
         .then(data => {
+            const products = Array.isArray(data.products) ? data.products : [];
 
-            data.products.forEach(item => {
+            products.forEach(item => {
+                const elBuy = document.getElementById("price-" + item.id);
+                const elSell = document.getElementById("price-sell-" + item.id);
 
-                const el = document.getElementById("price-" + item.id);
-
-                if (!el) return;
-
-                const currentPrice = el.innerText.replace(" تومان","");
-
-                if (currentPrice != item.price) {
-
-                    el.innerText = item.price + " تومان";
-
-                    el.classList.add("price-update");
-
-                    setTimeout(() => {
-                        el.classList.remove("price-update");
-                    }, 800);
-
-                }
-
+                updatePriceElement(elBuy, item.buy);
+                updatePriceElement(elSell, item.sell);
             });
-
+        })
+        .catch(error => {
+            console.error("Error fetching prices:", error);
         });
 }
 
