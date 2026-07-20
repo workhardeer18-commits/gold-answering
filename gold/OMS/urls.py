@@ -61,4 +61,8 @@ path(
     path("webhooks/zaryar/prices/", zaryar_prices_webhook, name="zaryar_prices_webhook"),
 
 
+path("webhooks/zaryar/prices", zaryar_prices_webhook),
+
+
+
 ]
