@@ -3,7 +3,7 @@ from OMS.views import category_mazane_list, create_product, create_product_categ
     delete_product, \
     delete_product_category, edit_category_mazaneh, edit_order, \
     edit_product, edit_product_category, live_prices, order_list, \
-    create_order, product_category_list, zaryar_prices_webhook
+    create_order, product_category_list
 
 
 from OMS.views.product_list import product_list
