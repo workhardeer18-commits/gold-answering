@@ -13,12 +13,12 @@ services:
     ports:
       - "5432:5432"
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
+#  redis:
+#    image: redis:7-alpine
+#    container_name: redis
+#    restart: always
+#    ports:
+#      - "6379:6379"
 
   web:
     build: .
@@ -32,34 +32,33 @@ services:
       - .env
     depends_on:
       - postgres
-      - redis
     restart: always
 
-  celery_worker:
-    build: .
-    container_name: celery_worker
-    command: ./deploy.sh worker
-    volumes:
-      - .:/app
-    env_file:
-      - .env
-    depends_on:
-      - postgres
-      - redis
-    restart: always
-
-  celery_beat:
-    build: .
-    container_name: celery_beat
-    command: ./deploy.sh beat
-    volumes:
-      - .:/app
-    env_file:
-      - .env
-    depends_on:
-      - postgres
-      - redis
-    restart: always
+#  celery_worker:
+#    build: .
+#    container_name: celery_worker
+#    command: ./deploy.sh worker
+#    volumes:
+#      - .:/app
+#    env_file:
+#      - .env
+#    depends_on:
+#      - postgres
+#      - redis
+#    restart: always
+#
+#  celery_beat:
+#    build: .
+#    container_name: celery_beat
+#    command: ./deploy.sh beat
+#    volumes:
+#      - .:/app
+#    env_file:
+#      - .env
+#    depends_on:
+#      - postgres
+#      - redis
+#    restart: always
 
 
 volumes:

@@ -10,11 +10,10 @@ from OMS.models.order import Order
 from OMS.models.product import Product
 
 
-def get_user_specific_prices(user, product):
+def get_user_specific_prices(user, product) -> dict | None:
     base_price_obj = BasePrice.objects.filter(
         product=product
     ).order_by("-created_at").first()
-
     if not base_price_obj:
         return None
 
@@ -29,6 +28,9 @@ def get_user_specific_prices(user, product):
         product=product
     ).first()
 
+    if not mazaneh_entry:
+        return None
+
     buy_offset = mazaneh_entry.buy_mazaneh
     sell_offset = mazaneh_entry.sell_mazaneh
 
@@ -36,7 +38,7 @@ def get_user_specific_prices(user, product):
     zaryar_sell = base_price_obj.zaryar_sell_price
 
     price_to_buy_from_us = zaryar_sell + sell_offset
-    price_to_sell_to_us = max(zaryar_buy - buy_offset, Decimal("0"))
+    price_to_sell_to_us = max(abs(zaryar_buy - buy_offset), Decimal("0"))
 
     return {
         "price_to_buy": price_to_buy_from_us,
