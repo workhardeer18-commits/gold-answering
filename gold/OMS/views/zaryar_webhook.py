@@ -1,10 +1,11 @@
 import json
 import logging
-from decimal import Decimal, InvalidOperation
+
+from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.db import transaction
+logger.info(msg=f"Zaryar Request Received, {request.GET}, {request.POST}")
 from OMS.models.base_price import BasePrice
 from OMS.models.product import Product
 
@@ -16,6 +17,7 @@ REQUIRED_FIELDS = {"Title", "BuyPrice", "SellPrice", "BasePrice", "MarketIsOpen"
 @csrf_exempt
 @require_POST
 def zaryar_prices_webhook(request):
+
     try:
         payload = json.loads(request.body)
     except Exception:
@@ -54,4 +56,5 @@ def zaryar_prices_webhook(request):
             except Exception:
                 continue
 
+    logger.info(msg=f'Zaryar Result: {result}')
     return JsonResponse(result)
