@@ -2,91 +2,368 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>پنل کاربر</title>
-  <style>
-    :root {
-      --bg: #0b0c10; --card-bg: #10131b; --gold: #f0c36b; --text: #e7e7e7;
-      --buy-btn: #3cc668; --sell-btn: #d65b6f; --header-bg: rgba(9, 10, 15, 0.96);
-      --item-border: rgba(255,255,255,0.05); --gold-border-hover: rgba(240,195,107,0.2);
-      --sell-btn-hover: #ff5d7a; --buy-btn-hover: #5bd688; --cancel-btn-bg: #333;
-      --cancel-btn-text: #ccc; --modal-border: #f0c36b; --input-bg: #1a1d26;
-      --input-border: rgba(255,255,255,0.1); --footer-bg: #090a0f;
-    }
-    html, body, div, span, h1, h2, h3, b, a, p, label, input, select, textarea, button, strong, small { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); line-height: 1.6; }
-    a { text-decoration: none; color: inherit; }
-    header { position: sticky; top: 0; background: var(--header-bg); border-bottom: 1px solid var(--item-border); z-index: 1000; height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-    .logo { color: var(--gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; }
-    .menu-btn { cursor: pointer; padding: 10px; background: #1a1d26; border-radius: 8px; border: 1px solid var(--gold-border-hover); }
-    nav { position: fixed; top: 80px; right: -250px; width: 250px; height: calc(100vh - 80px); background: #0f1320; transition: 0.3s; z-index: 999; padding: 20px; border-left: 1px solid rgba(255,255,255,0.1); }
-    nav.active { right: 0; }
-    nav a { display: block; color: #fff; padding: 15px; border-bottom: 1px solid var(--item-border); transition: 0.2s; }
-    nav a:hover { color: var(--gold); background: rgba(255,255,255,0.02); }
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 998; }
-    .overlay.active { display: block; }
-    main { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
-    .section-title { text-align: center; color: var(--gold); margin-bottom: 30px; font-size: 1.5rem; font-weight: 800; }
-    .prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .price-card { border: 1px solid var(--gold); background: var(--card-bg); border-radius: 15px; padding: 20px; transition: 0.3s ease; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .item-header { font-size: 1.3rem; font-weight: bold; color: var(--gold); margin-bottom: 5px; text-align: center; border-bottom: 1px solid var(--item-border); padding-bottom: 10px;}
-    .base-price { text-align: center; font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; padding-bottom: 10px; opacity: 0.7;}
-    .price-row { display: flex; gap: 10px; margin-bottom: 10px; }
-    .price-row div { flex: 1; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 1.1rem; border: 1px solid transparent; transition: border-color 0.3s ease; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 70px; }
-    .price-row .sell { background: rgba(214, 91, 111, 0.1); color: var(--sell-btn); border-color: rgba(214, 91, 111, 0.2); }
-    .price-row .buy { background: rgba(60, 198, 104, 0.1); color: var(--buy-btn); border-color: rgba(60, 198, 104, 0.2); }
-    .price-row .main { background: rgba(240, 195, 107, 0.1); color: var(--gold); border-color: rgba(240, 195, 107, 0.2); }
-    .card-actions { display: flex; gap: 10px; margin-top: auto; }
-    .card-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: #fff; transition: 0.3s ease; font-size: 0.9rem; }
-    .card-buy { background: var(--buy-btn); } .card-sell { background: var(--sell-btn); }
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-    .modal.active { display: flex; }
-    .modal-content { background: var(--card-bg); border: 1px solid var(--modal-border); border-radius: 20px; width: 100%; max-width: 450px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .modal h2 { color: var(--gold); text-align: center; margin-bottom: 20px; }
-    input { width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); padding: 12px; border-radius: 8px; color: #fff; }
-    .submit-btn { flex: 2; background: var(--buy-btn); border: none; padding: 15px; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; }
-    .cancel-btn { flex: 1; background: var(--cancel-btn-bg); border: none; padding: 15px; border-radius: 10px; color: var(--cancel-btn-text); cursor: pointer; }
-    .price-update { animation: blinkPrice 0.8s ease; }
-    @keyframes blinkPrice { 0% { background: rgba(240,195,107,0.0); } 50% { background: rgba(240,195,107,0.35); } 100% { background: rgba(240,195,107,0.0); } }
-    @media (max-width: 768px) { .prices { grid-template-columns: 1fr; } }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>پنل کاربر</title>
+    <style>
+        :root {
+            --bg: #0b0c10;
+            --card-bg: #10131b;
+            --gold: #f0c36b;
+            --text: #e7e7e7;
+            --buy-btn: #3cc668;
+            --sell-btn: #d65b6f;
+            --header-bg: rgba(9, 10, 15, 0.96);
+            --item-border: rgba(255, 255, 255, 0.05);
+            --gold-border-hover: rgba(240, 195, 107, 0.2);
+            --sell-btn-hover: #ff5d7a;
+            --buy-btn-hover: #5bd688;
+            --cancel-btn-bg: #333;
+            --cancel-btn-text: #ccc;
+            --modal-border: #f0c36b;
+            --input-bg: #1a1d26;
+            --input-border: rgba(255, 255, 255, 0.1);
+            --footer-bg: #090a0f;
+        }
+
+        html, body, div, span, h1, h2, h3, b, a, p, label, input, select, textarea, button, strong, small {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--item-border);
+            z-index: 1000;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: var(--gold);
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .menu-btn {
+            cursor: pointer;
+            padding: 10px;
+            background: #1a1d26;
+            border-radius: 8px;
+            border: 1px solid var(--gold-border-hover);
+        }
+
+        nav {
+            position: fixed;
+            top: 80px;
+            right: -250px;
+            width: 250px;
+            height: calc(100vh - 80px);
+            background: #0f1320;
+            transition: 0.3s;
+            z-index: 999;
+            padding: 20px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav.active {
+            right: 0;
+        }
+
+        nav a {
+            display: block;
+            color: #fff;
+            padding: 15px;
+            border-bottom: 1px solid var(--item-border);
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--gold);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 998;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        main {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .prices {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .price-card {
+            border: 1px solid var(--gold);
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            transition: 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-header {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 5px;
+            text-align: center;
+            border-bottom: 1px solid var(--item-border);
+            padding-bottom: 10px;
+        }
+
+        .base-price {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            opacity: 0.7;
+        }
+
+        .price-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .price-row div {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 1px solid transparent;
+            transition: border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 70px;
+        }
+
+        .price-row .sell {
+            background: rgba(214, 91, 111, 0.1);
+            color: var(--sell-btn);
+            border-color: rgba(214, 91, 111, 0.2);
+        }
+
+        .price-row .buy {
+            background: rgba(60, 198, 104, 0.1);
+            color: var(--buy-btn);
+            border-color: rgba(60, 198, 104, 0.2);
+        }
+
+        .price-row .main {
+            background: rgba(240, 195, 107, 0.1);
+            color: var(--gold);
+            border-color: rgba(240, 195, 107, 0.2);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .card-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #fff;
+            transition: 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .card-buy {
+            background: var(--buy-btn);
+        }
+
+        .card-sell {
+            background: var(--sell-btn);
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--modal-border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .submit-btn {
+            flex: 2;
+            background: var(--buy-btn);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            flex: 1;
+            background: var(--cancel-btn-bg);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            color: var(--cancel-btn-text);
+            cursor: pointer;
+        }
+
+        .price-update {
+            animation: blinkPrice 0.8s ease;
+        }
+
+        @keyframes blinkPrice {
+            0% {
+                background: rgba(240, 195, 107, 0.0);
+            }
+            50% {
+                background: rgba(240, 195, 107, 0.35);
+            }
+            100% {
+                background: rgba(240, 195, 107, 0.0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .prices {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
+<header>
     <div class="header-inner">
-      <div class="menu-btn" onclick="toggleMenu()">☰</div>
-      <div class="logo">Gold Shop</div>
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
+        <div class="logo">Gold Shop</div>
     </div>
-  </header>
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-  <nav id="menu">
+</header>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<nav id="menu">
     <a href='{% url "order_list" %}'>سفارشات من</a>
     <a href="{% url 'do_logout' %}" style="color: var(--sell-btn);"> خروج از حساب</a>
-  </nav>
-  <main>
+</nav>
+<main>
     <h2 class="section-title">لیست قیمت ها</h2>
     <section class="prices">
-      {% for product in products %}
-      <div class="price-card">
-        <div class="item-header">{{ product.title }}</div>
-        <div class="base-price" id="base-price-{{ product.id }}">قیمت پایه: {{ product.current_base_price|default:"--"|intcomma }} ریال</div>
-        <div class="price-row">
-          <div class="buy"><small>خرید</small><span id="price-buy-{{ product.id }}">{{ product.display_buy_price|default:"--" }}</span></div>
-          <div class="sell"><small>فروش</small><span id="price-sell-{{ product.id }}">{{ product.display_sell_price|default:"--" }}</span></div>
-          <div class="main"><small>اصلی</small><span id="price-main-{{ product.id }}">--</span></div>
-        </div>
-        <div class="card-actions">
-          <button class="card-buy" onclick="openTradeModal('buy', '{{ product.id }}', '{{ product.title }}')">خرید</button>
-          <button class="card-sell" onclick="openTradeModal('sell', '{{ product.id }}', '{{ product.title }}')">فروش</button>
-        </div>
-      </div>
-      {% endfor %}
+        {% for product in products %}
+            <div class="price-card">
+                <div class="item-header">{{ product.title }}</div>
+                <div class="base-price" id="base-price-{{ product.id }}">قیمت
+                    پایه: {{ product.current_base_price|default:"--"|intcomma }} ریال
+                </div>
+                <div class="price-row">
+                    <div class="buy"><small>خرید</small><span
+                            id="price-buy-{{ product.id }}">{{ product.display_buy_price|default:"--" }}</span></div>
+                    <div class="sell"><small>فروش</small><span
+                            id="price-sell-{{ product.id }}">{{ product.display_sell_price|default:"--" }}</span></div>
+                    <div class="main"><small>اصلی</small><span id="price-main-{{ product.id }}">--</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-buy" onclick="openTradeModal('buy', '{{ product.id }}', '{{ product.title }}')">
+                        خرید
+                    </button>
+                    <button class="card-sell"
+                            onclick="openTradeModal('sell', '{{ product.id }}', '{{ product.title }}')">فروش
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
     </section>
-  </main>
-  <script>
-    function toggleMenu() { document.getElementById('menu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+</main>
+<script>
+    function toggleMenu() {
+        document.getElementById('menu').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+
     function formatAndBlink(element, newValue) {
         if (!element) return;
         const formatted = Number(newValue).toLocaleString("fa-IR");
@@ -96,21 +373,30 @@
             setTimeout(() => element.classList.remove("price-update"), 800);
         }
     }
+
     function fetchPrices() {
-        fetch("/OMS/live-prices/").then(r => r.json()).then(data => {
-            data.products.forEach(item => {
-                const b = document.getElementById("price-buy-" + item.id);
-                const s = document.getElementById("price-sell-" + item.id);
-                const m = document.getElementById("price-main-" + item.id);
-                const bp = document.getElementById("base-price-" + item.id);
-                if (b && item.buy) formatAndBlink(b, item.buy);
-                if (s && item.sell) formatAndBlink(s, item.sell);
-                if (m && item.base_price) formatAndBlink(m, item.base_price);
-                if (bp && item.base_price) bp.innerText = "قیمت پایه: " + Number(item.base_price).toLocaleString("fa-IR") + " ریال";
+        fetch("/OMS/product_list/?json=true")
+            .then(r => r.json())
+            .then(data => {
+                data.products.forEach(item => {
+                    const b = document.getElementById("price-buy-" + item.id);
+                    const s = document.getElementById("price-sell-" + item.id);
+                    const m = document.getElementById("price-main-" + item.id);
+                    const bp = document.getElementById("base-price-" + item.id);
+
+                    if (b && item.buy) formatAndBlink(b, item.buy);
+                    if (s && item.sell) formatAndBlink(s, item.sell);
+                    if (m && item.base_price) formatAndBlink(m, item.base_price);
+                    if (bp && item.base_price)
+                        bp.innerText = "قیمت پایه: " + Number(item.base_price).toLocaleString("fa-IR") + " ریال";
+                });
             });
-        });
     }
-    document.addEventListener('DOMContentLoaded', () => { fetchPrices(); setInterval(fetchPrices, 5000); });
-  </script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchPrices();
+        setInterval(fetchPrices, 5000);
+    });
+</script>
 </body>
 </html>

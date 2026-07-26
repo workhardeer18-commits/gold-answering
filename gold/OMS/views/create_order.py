@@ -45,6 +45,7 @@ def get_user_specific_prices(user, product) -> dict | None:
         "price_to_sell": price_to_sell_to_us,
         "buy_offset": buy_offset,
         "sell_offset": sell_offset,
+        "price": base_price_obj.price
     }
 
 

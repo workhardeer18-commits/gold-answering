@@ -17,11 +17,19 @@ def product_list(request):
         if prices:
             product.current_buy_price = prices["price_to_buy"]
             product.current_sell_price = prices["price_to_sell"]
+            product.price = prices["price"]
         else:
             product.current_buy_price = "ناموجود"
             product.current_sell_price = "ناموجود"
+            product.price = "ناموجود"
 
     if json:
-        return JsonResponse({"products": products})
+        return JsonResponse({"products": [{
+            'id': product.id,
+            'title': product.title,
+            'buy': product.current_buy_price,
+            'sell': product.current_sell_price,
+            'price': product.price,
+        } for product in products]})
 
     return render(request, "product_list.html", {"products": products})
