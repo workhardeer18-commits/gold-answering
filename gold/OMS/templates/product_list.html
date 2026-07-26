@@ -4,403 +4,446 @@
 {% block title %}مدیریت محصولات {% endblock %}
 
 {% block content %}
-<style>
-    /* تنظیمات رنگی تم فوق تیره */
-    :root {
-        --gold: #f0c36b;
-        --bg-deep: #0b0c10; /* سیاه اصلی */
-        --card-bg: #11141d; /* ذغالی تیره برای کارت‌ها */
-        --item-bg: #1c1f29; /* رنگ داخل آیتم‌ها */
-        --text-dim: #94a3b8;
-    }
+    <style>
+        /* تنظیمات رنگی تم فوق تیره */
+        :root {
+            --gold: #f0c36b;
+            --bg-deep: #0b0c10; /* سیاه اصلی */
+            --card-bg: #11141d; /* ذغالی تیره برای کارت‌ها */
+            --item-bg: #1c1f29; /* رنگ داخل آیتم‌ها */
+            --text-dim: #94a3b8;
+        }
 
-     html, body, div, span, h1, h2, h3, b, a, p, label, input, select, textarea, button {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-    }
+        html, body, div, span, h1, h2, h3, b, a, p, label, input, select, textarea, button {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+        }
 
-    /* اعمال رنگ تیره به کل بدنه برای اطمینان */
-    body {
-        background-color: var(--bg-deep) !important;
-        color: #fff;
-    }
+        /* اعمال رنگ تیره به کل بدنه برای اطمینان */
+        body {
+            background-color: var(--bg-deep) !important;
+            color: #fff;
+        }
 
-    .container {
-        max-width: 1100px;
-        margin: auto;
-        padding: 20px 16px 120px;
-    }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px 16px 120px;
+        }
 
-    .top-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
 
-    .page-title { 
-        color: #fff; 
-        font-size: 1.6rem; 
-        font-weight: 800; 
-        margin: 0;
-    }
+        .page-title {
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0;
+        }
 
-    .add-btn {
-        background: var(--gold);
-        color: #000;
-        padding: 12px 24px;
-        border-radius: 12px;
-        font-weight: 900;
-        text-decoration: none;
-        font-size: 0.9rem;
-        box-shadow: 0 4px 15px rgba(240, 195, 107, 0.15);
-        transition: 0.3s;
-    }
+        .add-btn {
+            background: var(--gold);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 900;
+            text-decoration: none;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(240, 195, 107, 0.15);
+            transition: 0.3s;
+        }
 
-    .add-btn:hover {
-        transform: translateY(-2px);
-        opacity: 0.9;
-    }
+        .add-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
 
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
 
-    /* کارت محصول تیره */
-    .product-card {
-        background: var(--card-bg);
-        border-radius: 20px;
-        padding: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        transition: 0.3s;
-    }
+        /* کارت محصول تیره */
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: 0.3s;
+        }
 
-    .product-card:hover {
-        border-color: rgba(240, 195, 107, 0.2);
-    }
+        .product-card:hover {
+            border-color: rgba(240, 195, 107, 0.2);
+        }
 
-    .product-card h3 { 
-        color: var(--gold); 
-        margin: 0; 
-        font-size: 1.3rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 10px;
-    }
+        .product-card h3 {
+            color: var(--gold);
+            margin: 0;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
 
-    /* باکس‌های داخلی تیره */
-    .product-detail {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 5px;
-        font-size: 0.9rem;
-    }
+        /* باکس‌های داخلی تیره */
+        .product-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 5px;
+            font-size: 0.9rem;
+        }
 
-    .detail-label { color: var(--text-dim); }
-    .detail-value { color: #fff; font-weight: 500; }
-    .price-value { color: var(--gold); font-weight: 800; font-size: 1.1rem; }
+        .detail-label {
+            color: var(--text-dim);
+        }
 
-    /* ردیف وضعیت خرید (تیره و شیک) */
-    .status-option {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--item-bg);
-        padding: 14px 18px;
-        border-radius: 14px;
-        margin-top: 5px;
-        border: 1px solid rgba(255, 255, 255, 0.02);
-    }
+        .detail-value {
+            color: #fff;
+            font-weight: 500;
+        }
 
-    .status-option label {
-        font-size: 0.9rem;
-        color: #eee;
-        cursor: pointer;
-        font-weight: 600;
-    }
+        .price-value {
+            color: var(--gold);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
 
-    /* چک‌باکس طلایی */
-    .status-option input[type="checkbox"] {
-        width: 22px;
-        height: 22px;
-        accent-color: var(--gold);
-        cursor: pointer;
-    }
+        /* ردیف وضعیت خرید (تیره و شیک) */
+        .status-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--item-bg);
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-top: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
 
-    /* دکمه‌های پایینی */
-    .card-actions {
-        display: flex;
-        gap: 12px;
-        margin-top: 10px;
-        padding-top: 10px;
-    }
+        .status-option label {
+            font-size: 0.9rem;
+            color: #eee;
+            cursor: pointer;
+            font-weight: 600;
+        }
 
-    .btn-edit {
-        flex: 2;
-        background: #252a37;
-        color: #fff;
-        text-align: center;
-        padding: 10px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: bold;
-        text-decoration: none;
-        transition: 0.3s;
-    }
+        /* چک‌باکس طلایی */
+        .status-option input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--gold);
+            cursor: pointer;
+        }
 
-    .btn-edit:hover { background: #31394a; }
+        /* دکمه‌های پایینی */
+        .card-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
 
-    .btn-delete {
-        flex: 1;
-        background: rgba(229, 57, 53, 0.05);
-        color: #e53935;
-        border: 1px solid rgba(229, 57, 53, 0.2);
-        text-align: center;
-        padding: 10px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        text-decoration: none;
-        transition: 0.3s;
-    }
+        .btn-edit {
+            flex: 2;
+            background: #252a37;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
 
-    .btn-delete:hover {
-        background: #e53935;
-        color: #fff;
-    }
+        .btn-edit:hover {
+            background: #31394a;
+        }
 
-    .back-btn { 
-        display: inline-block; 
-        margin-top: 40px; 
-        color: var(--gold); 
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-    
-    .back-btn:hover { color: var(--gold); }
-    
+        .btn-delete {
+            flex: 1;
+            background: rgba(229, 57, 53, 0.05);
+            color: #e53935;
+            border: 1px solid rgba(229, 57, 53, 0.2);
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #e53935;
+            color: #fff;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 40px;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            color: var(--gold);
+        }
+
         /* Alerts */
-        .custom-alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .alert-success { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid #4caf50; }
-        .alert-error { background: rgba(229, 57, 53, 0.1); color: #e53935; border: 1px solid #e53935; }
-        .alert-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
-    .price-update {
-    animation: blinkPrice 0.8s ease;
-}
-
-@keyframes blinkPrice {
-    0% {
-        background: rgba(240,195,107,0.0);
-    }
-    50% {
-        background: rgba(240,195,107,0.35);
-    }
-    100% {
-        background: rgba(240,195,107,0.0);
-    }
-}
-
-
-@media (max-width: 600px){
-
-    .container{
-        padding:16px 12px 90px;
-    }
-
-    .top-header{
-        flex-direction:column;
-        gap:15px;
-        align-items:stretch;
-        text-align:center;
-    }
-
-    .page-title{
-        font-size:1.3rem;
-    }
-
-    .add-btn{
-        width:100%;
-        padding:12px;
-        text-align:center;
-        font-size:.9rem;
-    }
-
-    .product-card{
-        padding:18px;
-    }
-
-    .product-card h3{
-        font-size:1.1rem;
-    }
-
-    .product-detail{
-        font-size:.9rem;
-    }
-
-    .card-actions{
-        flex-direction:column;
-    }
-
-    .btn-edit,
-    .btn-delete{
-        width:60%;
-        padding:12px;
-    }
-
-}
-
-</style>
-    
-
-
-
-<div class="container">
-    
-    {% if messages %}
-        {% for message in messages %}
-            <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
-                <span>{{ message }}</span>
-                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <div class="top-header">
-        <h2 class="page-title">مدیریت محصولات</h2>
-        {% if request.user.is_staff %}
-            <a href="{% url 'create_product' %}" class="add-btn">+ افزودن محصول</a>
-        {% endif %}
-    </div>
-
-    <div class="products-grid">
-        {% for product in products %}
-        <div class="product-card">
-    <h3>{{ product.title }}</h3>
-    
-    <!-- نمایش قیمت خرید -->
-    <div class="product-detail">
-        <span class="detail-label">قیمت خرید از ما</span>
-        <span class="price-value" id="price-{{ product.id }}">
-            {{ product.current_buy_price }} تومان
-        </span>
-    </div>
-
-    <!-- نمایش قیمت فروش -->
-   <div class="product-detail">
-    <span class="detail-label">قیمت فروش به ما</span>
-    <span class="price-value" id="price-sell-{{ product.id }}">
-        {{ product.current_sell_price }} تومان
-    </span>
-</div>
-
-       {% if request.user.is_staff %}
-    <div class="card-actions">
-        <a href="{% url 'edit_product' product.id %}" class="btn-edit">ویرایش محصول</a>
-        <a href="{% url 'delete_product' product.id %}" class="btn-delete">حذف</a>
-    </div>
-    {% endif %}
-        </div>
-        {% empty %}
-            <div style="text-align: center; grid-column: 1/-1; padding: 50px; color: var(--text-dim);">
-                <p>هنوز محصولی ثبت نشده است.</p>
-            </div>
-        {% endfor %}
-    </div>
-
-    <a href="{% url 'admin_dashboard' %}" class="back-btn">← بازگشت به داشبورد</a>
-
-</div>
-
-<script>
-function toggleStatus(productId) {
-    const isChecked = document.getElementById('buy-' + productId).checked;
-    console.log("Product ID:", productId, "Available:", isChecked);
-    // در اینجا می‌توانید با استفاده از fetch یک درخواست به ویو جنگو بفرستید تا تغییر در دیتابیس ذخیره شود.
-}
-
-function formatNumber(value) {
-    if (value === null || value === undefined || value === "") {
-        return null;
-    }
-
-    const num = Number(value);
-
-    if (Number.isNaN(num)) {
-        return String(value);
-    }
-
-    return num.toLocaleString("fa-IR");
-}
-
-function updatePriceElement(element, value) {
-    if (!element) {
-        return;
-    }
-
-    const formattedValue = formatNumber(value);
-
-    let newText;
-    let shouldAnimate = false;
-
-    if (formattedValue === null) {
-        // اگر مقدار null بود، "ناموجود" را نمایش بده
-        newText = "ناموجود";
-    } else {
-        // اگر مقدار عددی بود، فرمت کن و " تومان" را اضافه کن
-        newText = formattedValue + " تومان";
-        shouldAnimate = true; // فقط اگر مقدار عددی بود انیمیشن اعمال شود
-    }
-
-    if (element.innerText.trim() !== newText) {
-        element.innerText = newText;
-        if (shouldAnimate) {
-            element.classList.add("price-update");
-            setTimeout(() => {
-                element.classList.remove("price-update");
-            }, 800);
-        } else {
-            // اگر مقدار ناموجود بود، انیمیشن را حذف کن
-            element.classList.remove("price-update");
+        .custom-alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-    }
-}
 
-function fetchPrices() {
-    fetch("{% url 'live_prices' %}", {
-        method: "GET",
-        credentials: "same-origin",
-        headers: {
-            "X-Requested-With": "XMLHttpRequest"
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+            border: 1px solid #4caf50;
         }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+        .alert-error {
+            background: rgba(229, 57, 53, 0.1);
+            color: #e53935;
+            border: 1px solid #e53935;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .price-update {
+            animation: blinkPrice 0.8s ease;
+        }
+
+        @keyframes blinkPrice {
+            0% {
+                background: rgba(240, 195, 107, 0.0);
+            }
+            50% {
+                background: rgba(240, 195, 107, 0.35);
+            }
+            100% {
+                background: rgba(240, 195, 107, 0.0);
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 16px 12px 90px;
             }
 
-            return response.json();
-        })
-        .then(data => {
-            const products = Array.isArray(data.products) ? data.products : [];
+            .top-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+                text-align: center;
+            }
 
-            products.forEach(item => {
-                const elBuy = document.getElementById("price-" + item.id);
-                const elSell = document.getElementById("price-sell-" + item.id);
+            .page-title {
+                font-size: 1.3rem;
+            }
 
-                updatePriceElement(elBuy, item.buy);
-                updatePriceElement(elSell, item.sell);
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching prices:", error);
-        });
-}
+            .add-btn {
+                width: 100%;
+                padding: 12px;
+                text-align: center;
+                font-size: .9rem;
+            }
 
-setInterval(fetchPrices, 5000);
-fetchPrices();
-</script>
+            .product-card {
+                padding: 18px;
+            }
+
+            .product-card h3 {
+                font-size: 1.1rem;
+            }
+
+            .product-detail {
+                font-size: .9rem;
+            }
+
+            .card-actions {
+                flex-direction: column;
+            }
+
+            .btn-edit,
+            .btn-delete {
+                width: 60%;
+                padding: 12px;
+            }
+
+        }
+
+    </style>
+
+
+
+
+    <div class="container">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="custom-alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+                    <span>{{ message }}</span>
+                    <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="top-header">
+            <h2 class="page-title">مدیریت محصولات</h2>
+            {% if request.user.is_staff %}
+                <a href="{% url 'create_product' %}" class="add-btn">+ افزودن محصول</a>
+            {% endif %}
+        </div>
+
+        <div class="products-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    <h3>{{ product.title }}</h3>
+
+                    <!-- نمایش قیمت خرید -->
+                    <div class="product-detail">
+                        <span class="detail-label">قیمت خرید از ما</span>
+                        <span class="price-value" id="price-{{ product.id }}">
+            {{ product.current_buy_price }} تومان
+        </span>
+                    </div>
+
+                    <!-- نمایش قیمت فروش -->
+                    <div class="product-detail">
+                        <span class="detail-label">قیمت فروش به ما</span>
+                        <span class="price-value" id="price-sell-{{ product.id }}">
+        {{ product.current_sell_price }} تومان
+    </span>
+                    </div>
+
+                    {% if request.user.is_staff %}
+                        <div class="card-actions">
+                            <a href="{% url 'edit_product' product.id %}" class="btn-edit">ویرایش محصول</a>
+                            <a href="{% url 'delete_product' product.id %}" class="btn-delete">حذف</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div style="text-align: center; grid-column: 1/-1; padding: 50px; color: var(--text-dim);">
+                    <p>هنوز محصولی ثبت نشده است.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back-btn">← بازگشت به داشبورد</a>
+
+    </div>
+
+    <script>
+        function toggleStatus(productId) {
+            const isChecked = document.getElementById('buy-' + productId).checked;
+            console.log("Product ID:", productId, "Available:", isChecked);
+            // در اینجا می‌توانید با استفاده از fetch یک درخواست به ویو جنگو بفرستید تا تغییر در دیتابیس ذخیره شود.
+        }
+
+        function formatNumber(value) {
+            if (value === null || value === undefined || value === "") {
+                return null;
+            }
+
+            const num = Number(value);
+
+            if (Number.isNaN(num)) {
+                return String(value);
+            }
+
+            return num.toLocaleString("fa-IR");
+        }
+
+        function updatePriceElement(element, value) {
+            if (!element) {
+                return;
+            }
+
+            const formattedValue = formatNumber(value);
+
+            let newText;
+            let shouldAnimate = false;
+
+            if (formattedValue === null) {
+                // اگر مقدار null بود، "ناموجود" را نمایش بده
+                newText = "ناموجود";
+            } else {
+                // اگر مقدار عددی بود، فرمت کن و " تومان" را اضافه کن
+                newText = formattedValue + " تومان";
+                shouldAnimate = true; // فقط اگر مقدار عددی بود انیمیشن اعمال شود
+            }
+
+            if (element.innerText.trim() !== newText) {
+                element.innerText = newText;
+                if (shouldAnimate) {
+                    element.classList.add("price-update");
+                    setTimeout(() => {
+                        element.classList.remove("price-update");
+                    }, 800);
+                } else {
+                    // اگر مقدار ناموجود بود، انیمیشن را حذف کن
+                    element.classList.remove("price-update");
+                }
+            }
+        }
+
+        function fetchPrices() {
+            fetch("{% url 'product_list' %}", {
+                method: "GET",
+                credentials: "same-origin",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: {
+                    "json": true,
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    const products = Array.isArray(data.products) ? data.products : [];
+
+                    products.forEach(item => {
+                        const elBuy = document.getElementById("price-" + item.id);
+                        const elSell = document.getElementById("price-sell-" + item.id);
+
+                        updatePriceElement(elBuy, item.buy);
+                        updatePriceElement(elSell, item.sell);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching prices:", error);
+                });
+        }
+
+        setInterval(fetchPrices, 5000);
+        fetchPrices();
+    </script>
 
 
 {% endblock %}

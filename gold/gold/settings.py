@@ -23,12 +23,6 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
-ZARYAR_ALLOWED_IPS = [
-    "194.60.230.192",
-    "103.215.223.41",
-"185.139.34.15",
-
-]
 
 # Applications
 
@@ -39,13 +33,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.humanize',
-
-    'OMS',
-    'Base',
-    'UMS',
     'jalali_date',
+    'OMS',
+    'UMS',
 ]
 
 MIDDLEWARE = [
@@ -118,25 +109,25 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CELERY_BROKER_URL = env(
-    "CELERY_BROKER_URL",
-    default="redis://127.0.0.1:6379/0"
-)
+# CELERY_BROKER_URL = env(
+#     "CELERY_BROKER_URL",
+#     default="redis://127.0.0.1:6379/0"
+# )
+#
+# CELERY_RESULT_BACKEND = env(
+#     "CELERY_RESULT_BACKEND",
+#     default="redis://127.0.0.1:6379/1"
+# )
+#
+# CELERY_ACCEPT_CONTENT = ["json"]
+# CELERY_TASK_SERIALIZER = "json"
 
-CELERY_RESULT_BACKEND = env(
-    "CELERY_RESULT_BACKEND",
-    default="redis://127.0.0.1:6379/1"
-)
-
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-
-CELERY_BEAT_SCHEDULE = {
-    "fetch-every-5-seconds": {
-        "task": "OMS.tasks.task.test_task",
-        "schedule": 5.0,
-    },
-}
+# CELERY_BEAT_SCHEDULE = {
+#     "fetch-every-5-seconds": {
+#         "task": "OMS.tasks.task.test_task",
+#         "schedule": 5.0,
+#     },
+# }
 
 
 

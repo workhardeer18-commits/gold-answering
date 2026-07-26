@@ -1,9 +1,11 @@
+from decimal import Decimal, InvalidOperation
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+
 from OMS.models.base_price import BasePrice
 from OMS.models.category_product_mazaneh import CategoryProductMazaneh
-from decimal import Decimal, InvalidOperation
-from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from OMS.models.order import Order
 from OMS.models.product import Product
 
@@ -17,8 +19,8 @@ def get_user_specific_prices(user, product):
         return None
 
     if (
-        base_price_obj.zaryar_buy_price is None or
-        base_price_obj.zaryar_sell_price is None
+            base_price_obj.zaryar_buy_price is None or
+            base_price_obj.zaryar_sell_price is None
     ):
         return None
 
@@ -27,16 +29,8 @@ def get_user_specific_prices(user, product):
         product=product
     ).first()
 
-    buy_offset = (
-        mazaneh_entry.buy_mazaneh
-        if (mazaneh_entry and mazaneh_entry.buy_mazaneh is not None)
-        else Decimal("0")
-    )
-    sell_offset = (
-        mazaneh_entry.sell_mazaneh
-        if (mazaneh_entry and mazaneh_entry.sell_mazaneh is not None)
-        else Decimal("0")
-    )
+    buy_offset = mazaneh_entry.buy_mazaneh
+    sell_offset = mazaneh_entry.sell_mazaneh
 
     zaryar_buy = base_price_obj.zaryar_buy_price
     zaryar_sell = base_price_obj.zaryar_sell_price
@@ -54,7 +48,6 @@ def get_user_specific_prices(user, product):
 
 @login_required
 def create_order(request):
-
     if request.method != "POST":
         return redirect("user_dashboard")
 

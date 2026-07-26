@@ -14,6 +14,5 @@ from .category_mazane_list import category_mazane_list
 from .create_category_mazane import create_category_mazaneh
 from .edit_category_mazaneh import edit_category_mazaneh
 from .delete_category_mazaneh import delete_category_mazaneh
-from .live_prices import live_prices
 from .zaryar_webhook import zaryar_prices_webhook
 
