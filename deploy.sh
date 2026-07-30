@@ -5,6 +5,9 @@ cd gold
 echo "Applying migrations..."
 python manage.py migrate --noinput
 
+echo "Seeding Django admin user..."
+python manage.py seed_admin
+
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 

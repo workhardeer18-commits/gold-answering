@@ -11,6 +11,10 @@ class User(AbstractUser):
             default=False
         )
         def __str__(self):
-            return self.phone_number
+            if self.phone_number:
+                return self.phone_number
+            if self.username:
+                return self.username
+            return f"User #{self.pk}"
 
 
