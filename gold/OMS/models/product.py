@@ -17,7 +17,7 @@ class Product(models.Model):
         verbose_name="عنوان محصول در زریار"
     )
 
-    title = models.CharField(max_length=255, )
+    title = models.CharField(max_length=255, db_index=True)
     can_buy_online = models.BooleanField(
         default=True,
         verbose_name="امکان خرید آنلاین توسط کاربر"

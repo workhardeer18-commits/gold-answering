@@ -10,7 +10,7 @@ class CategoryProductMazaneh(models.Model):
     class Meta:
         unique_together = (
             "category",
-            "product"
+            "product",
         )
 
     def __str__(self):

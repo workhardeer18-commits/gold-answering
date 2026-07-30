@@ -14,6 +14,40 @@ logger = logging.getLogger(__name__)
 REQUIRED_FIELDS = {"Title", "BuyPrice", "SellPrice", "BasePrice", "MarketIsOpen", "Id"}
 
 
+def _parse_webhook_payload(request):
+    """
+    Parse JSON array from raw body. Also accepts a single object (wrapped as one-item list)
+    and common form field names if the body is empty.
+    Returns (payload_list, error_message).
+    """
+    raw = request.body
+    if not raw and request.POST:
+        for key in ("payload", "data", "json", "body"):
+            if key in request.POST:
+                raw = request.POST[key].encode("utf-8")
+                break
+
+    if not raw:
+        return None, "Empty request body; send a JSON array with Content-Type: application/json"
+
+    text = raw.decode("utf-8-sig").strip()
+    if not text:
+        return None, "Empty request body; send a JSON array with Content-Type: application/json"
+
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as exc:
+        return None, f"Invalid JSON: {exc.msg} (line {exc.lineno}, column {exc.colno})"
+
+    if isinstance(data, dict):
+        data = [data]
+
+    if not isinstance(data, list):
+        return None, "Payload must be a JSON array of product objects"
+
+    return data, None
+
+
 def _resolve_or_create_product(zaryar_id, zaryar_title):
     """Return (product, product_was_created)."""
     product = None
@@ -57,18 +91,13 @@ def _resolve_or_create_product(zaryar_id, zaryar_title):
 @csrf_exempt
 @require_POST
 def zaryar_prices_webhook(request):
-    body = request.body.decode("utf-8")
+    body = request.body.decode("utf-8", errors="replace")
     logger.info(msg=f"Zaryar Request Received, {request.GET}, {request.POST}, {body}")
-    try:
-        payload = json.loads(request.body)
-    except Exception:
-        return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
 
-    if not isinstance(payload, list):
-        return JsonResponse(
-            {"status": "error", "message": "Payload must be a JSON array"},
-            status=400,
-        )
+    payload, parse_error = _parse_webhook_payload(request)
+    if parse_error:
+        logger.warning("Zaryar webhook parse error: %s", parse_error)
+        return JsonResponse({"status": "error", "message": parse_error}, status=400)
 
     result = {
         "status": "ok",

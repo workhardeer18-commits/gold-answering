@@ -38,6 +38,12 @@ class BasePrice(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["product", "-created_at"],
+                name="oms_bp_product_created_idx",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.product} - {self.price}"

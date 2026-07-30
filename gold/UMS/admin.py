@@ -35,11 +35,30 @@ class OrderInline(admin.TabularInline):
         return qs.filter(pk__in=pks)
 
 
+class UserInCategoryInline(admin.TabularInline):
+    model = User
+    fk_name = "category"
+    extra = 0
+    show_change_link = True
+    fields = (
+        "username",
+        "phone_number",
+        "name",
+        "last_name",
+        "is_active",
+        "is_staff",
+        "is_admin",
+    )
+    ordering = ("username",)
+    verbose_name = "کاربر"
+    verbose_name_plural = "کاربران این دسته"
+
+
 @admin.register(UserCategory)
 class UserCategoryAdmin(admin.ModelAdmin):
     list_display = ("title", "user_count", "mazaneh_rule_count")
     search_fields = ("title",)
-    inlines = (CategoryProductMazanehOnCategoryInline,)
+    inlines = (UserInCategoryInline, CategoryProductMazanehOnCategoryInline)
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
