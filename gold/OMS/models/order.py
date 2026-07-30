@@ -35,6 +35,21 @@ class Order(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=["-created_at"], name="oms_order_created_idx"),
+            models.Index(
+                fields=["user", "-created_at"],
+                name="oms_order_user_created_idx",
+            ),
+            models.Index(
+                fields=["status", "-created_at"],
+                name="oms_order_status_cr_idx",
+            ),
+            models.Index(
+                fields=["product", "-created_at"],
+                name="oms_order_product_cr_idx",
+            ),
+        ]
 
     @property
     def get_created_jalali(self):

@@ -10,6 +10,15 @@ class User(AbstractUser):
         is_admin = models.BooleanField(
             default=False
         )
+
+        class Meta(AbstractUser.Meta):
+            indexes = [
+                models.Index(
+                    fields=["-date_joined"],
+                    name="ums_user_date_joined_idx",
+                ),
+            ]
+
         def __str__(self):
             if self.phone_number:
                 return self.phone_number
