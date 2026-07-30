@@ -14,12 +14,13 @@ def get_user_specific_prices(user, product) -> dict | None:
     base_price_obj = BasePrice.objects.filter(
         product=product
     ).order_by("-created_at").first()
+
     if not base_price_obj:
         return None
 
     if (
-            base_price_obj.zaryar_buy_price is None or
-            base_price_obj.zaryar_sell_price is None
+        base_price_obj.zaryar_buy_price is None or
+        base_price_obj.zaryar_sell_price is None
     ):
         return None
 
@@ -51,6 +52,7 @@ def get_user_specific_prices(user, product) -> dict | None:
 
 @login_required
 def create_order(request):
+
     if request.method != "POST":
         return redirect("user_dashboard")
 
@@ -64,18 +66,27 @@ def create_order(request):
     product = get_object_or_404(Product, id=product_id)
 
     user_prices = get_user_specific_prices(request.user, product)
+
     if not user_prices:
-        messages.error(request, "قیمت این محصول در حال حاضر در دسترس نیست.")
+        messages.error(
+            request,
+            "قیمت این محصول در حال حاضر در دسترس نیست."
+        )
         return redirect("user_dashboard")
 
+
+    # خرید
     if trade_type == "buy":
+
         raw_amount = request.POST.get("amount", "0")
 
         try:
             amount = Decimal(raw_amount)
+
         except (InvalidOperation, ValueError, TypeError):
             messages.error(request, "مبلغ نامعتبر است.")
             return redirect("user_dashboard")
+
 
         final_price = user_prices["price_to_buy"]
 
@@ -83,16 +94,22 @@ def create_order(request):
             messages.error(request, "قیمت در دسترس نیست.")
             return redirect("user_dashboard")
 
+
         quantity = amount / final_price
 
+
+    # فروش
     elif trade_type == "sell":
+
         raw_quantity = request.POST.get("quantity", "0")
 
         try:
             quantity = Decimal(raw_quantity)
+
         except (InvalidOperation, ValueError, TypeError):
             messages.error(request, "مقدار طلا نامعتبر است.")
             return redirect("user_dashboard")
+
 
         final_price = user_prices["price_to_sell"]
 
@@ -100,13 +117,18 @@ def create_order(request):
             messages.error(request, "قیمت در دسترس نیست.")
             return redirect("user_dashboard")
 
+
         amount = quantity * final_price
+
 
     else:
         messages.error(request, "نوع معامله نامعتبر است.")
         return redirect("user_dashboard")
 
+
+    # ثبت نهایی سفارش
     if "confirm" in request.POST:
+
         Order.objects.create(
             user=request.user,
             product=product,
@@ -118,14 +140,30 @@ def create_order(request):
             status="pending"
         )
 
-        messages.success(request, "سفارش با موفقیت ثبت شد.")
+        messages.success(
+            request,
+            "سفارش با موفقیت ثبت شد."
+        )
+
         return redirect("user_dashboard")
 
-    return render(request, "create_order.html", {
+
+    # نمایش پیش فاکتور داخل همان داشبورد
+
+    context = {
         "show_result": True,
         "final_price": final_price,
+        "final_quantity": round(quantity, 6),
+        "final_amount": amount,
         "quantity": round(quantity, 6),
         "amount": amount,
         "product": product,
         "trade_type": trade_type,
-    })
+    }
+
+
+    return render(
+        request,
+        "user_dashboard.html",
+        context
+    )

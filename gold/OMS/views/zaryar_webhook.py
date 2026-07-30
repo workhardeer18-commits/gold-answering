@@ -15,7 +15,8 @@ REQUIRED_FIELDS = {"Title", "BuyPrice", "SellPrice", "BasePrice", "MarketIsOpen"
 @csrf_exempt
 @require_POST
 def zaryar_prices_webhook(request):
-    logger.info(msg=f"Zaryar Request Received, {request.GET}, {request.POST}")
+    body = request.body.decode("utf-8")
+    logger.info(msg=f"Zaryar Request Received, {request.GET}, {request.POST}, {body}")
     try:
         payload = json.loads(request.body)
     except Exception:

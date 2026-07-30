@@ -60,6 +60,12 @@
             padding: 0 20px;
         }
 
+        .header-inner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .logo {
             color: var(--gold);
             font-size: 1.8rem;
@@ -234,6 +240,18 @@
             background: var(--sell-btn);
         }
 
+        .card-actions button:hover {
+            opacity: 0.8;
+        }
+
+        .card-buy:hover {
+            background: var(--buy-btn-hover);
+        }
+
+        .card-sell:hover {
+            background: var(--sell-btn-hover);
+        }
+
         .modal {
             position: fixed;
             inset: 0;
@@ -263,15 +281,44 @@
             color: var(--gold);
             text-align: center;
             margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
         }
 
-        input {
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        input, textarea {
             width: 100%;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
             padding: 12px;
             border-radius: 8px;
             color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
         }
 
         .submit-btn {
@@ -283,6 +330,12 @@
             color: #fff;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: var(--buy-btn-hover);
         }
 
         .cancel-btn {
@@ -293,6 +346,32 @@
             border-radius: 10px;
             color: var(--cancel-btn-text);
             cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .cancel-btn:hover {
+            background: #444;
+        }
+
+        .preview-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--item-border);
+            font-size: 0.95rem;
+        }
+
+        .preview-line:last-child {
+            border-bottom: none;
+        }
+
+        .preview-line strong {
+            color: var(--gold);
+        }
+
+        .preview-line span {
+            opacity: 0.8;
         }
 
         .price-update {
@@ -315,6 +394,59 @@
             .prices {
                 grid-template-columns: 1fr;
             }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            nav {
+                width: 220px;
+            }
+
+            main {
+                padding: 30px 15px;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+                margin-bottom: 25px;
+            }
+
+            .price-card {
+                padding: 18px;
+            }
+
+            .item-header {
+                font-size: 1.2rem;
+            }
+
+            .price-row div {
+                padding: 10px;
+                min-height: 60px;
+                font-size: 1rem;
+            }
+
+            .card-actions button {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .modal h2 {
+                font-size: 1.3rem;
+            }
+
+            .modal-buttons {
+                margin-top: 20px;
+            }
+
+            .submit-btn, .cancel-btn {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -325,14 +457,17 @@
         <div class="logo">Gold Shop</div>
     </div>
 </header>
+
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <nav id="menu">
-    <a href='{% url "order_list" %}'>سفارشات من</a>
+    <a href="{% url 'order_list' %}">سفارشات من</a>
     <a href="{% url 'do_logout' %}" style="color: var(--sell-btn);"> خروج از حساب</a>
 </nav>
+
 <main>
     <h2 class="section-title">لیست قیمت ها</h2>
     <section class="prices">
+        {% if products %}
         {% for product in products %}
             <div class="price-card">
                 <div class="item-header">{{ product.title }}</div>
@@ -340,11 +475,18 @@
                     پایه: {{ product.current_base_price|default:"--"|intcomma }} ریال
                 </div>
                 <div class="price-row">
-                    <div class="buy"><small>خرید</small><span
-                            id="price-buy-{{ product.id }}">{{ product.display_buy_price|default:"--" }}</span></div>
-                    <div class="sell"><small>فروش</small><span
-                            id="price-sell-{{ product.id }}">{{ product.display_sell_price|default:"--" }}</span></div>
-                    <div class="main"><small>اصلی</small><span id="price-main-{{ product.id }}">--</span></div>
+                    <div class="buy">
+                        <small>خرید</small>
+                        <span id="price-buy-{{ product.id }}">{{ product.display_buy_price|default:"--" }}</span>
+                    </div>
+                    <div class="sell">
+                        <small>فروش</small>
+                        <span id="price-sell-{{ product.id }}">{{ product.display_sell_price|default:"--" }}</span>
+                    </div>
+                    <div class="main">
+                        <small>اصلی</small>
+                        <span id="price-main-{{ product.id }}">--</span>
+                    </div>
                 </div>
                 <div class="card-actions">
                     <button class="card-buy" onclick="openTradeModal('buy', '{{ product.id }}', '{{ product.title }}')">
@@ -355,13 +497,116 @@
                     </button>
                 </div>
             </div>
+        {% empty %}
+            <div style="text-align:center; grid-column: 1/-1; padding: 50px; color: #94a3b8;">
+                <p>هنوز محصولی ثبت نشده است.</p>
+            </div>
         {% endfor %}
+        {% endif %}
     </section>
 </main>
+
+<!-- Trade Modal -->
+<div id="tradeModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">فرم معامله</h2>
+        <p id="itemNameField" style="text-align:center; color: var(--gold); margin-bottom: 10px;"></p>
+        <form id="tradeForm" action="{% url 'create_order' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="product" id="modalProductId">
+            <input type="hidden" name="trade_type" id="modalTradeType">
+
+            <div id="amountField">
+                <label>مبلغ معامله (ریال)</label>
+                <input type="number" name="amount" placeholder="مثلاً 50,000,000" required>
+                <p class="info-text">مبلغ نهایی بر اساس قیمت لحظه‌ای محاسبه خواهد شد.</p>
+            </div>
+
+            <div id="quantityField" style="display:none;">
+                <label>مقدار طلا (گرم)</label>
+                <input type="number" step="0.001" name="quantity" placeholder="مثلاً 10.5" required>
+                <p class="info-text">مبلغ نهایی بر اساس قیمت لحظه‌ای محاسبه خواهد شد.</p>
+            </div>
+
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" onclick="closeModal()">انصراف</button>
+                <button type="submit" class="submit-btn">مشاهده پیش‌فاکتور</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Pre-invoice Modal (تزریق داینامیک از بک‌اند) -->
+<div id="previewModal" class="modal {% if show_result %}active{% endif %}">
+    <div class="modal-content" style="border-width: 2px;" id="previewModalBody">
+        {% if show_result %}
+            <div id="preview-fragment" data-product-id="{{ product.id }}" data-trade-type="{{ trade_type }}" data-amount="{{ amount|default:'' }}" data-quantity="{{ quantity|default:'' }}">
+                <h2 style="margin-bottom:10px;">پیش‌فاکتور نهایی</h2>
+                <div class="preview-line">
+                    <span>محصول:</span>
+                    <strong>{{ product.title }}</strong>
+                </div>
+                <div class="preview-line">
+                    <span>نوع معامله:</span>
+                    <strong style="color: {% if trade_type == 'buy' %}var(--buy-btn){% else %}var(--sell-btn){% endif %};">       
+                        {% if trade_type == 'buy' %}خرید{% else %}فروش{% endif %}
+                    </strong>
+                </div>
+
+                <div class="preview-line">
+                    <span>مقدار طلا:</span>
+                    <strong>{{ final_quantity|floatformat:3 }} گرم</strong>
+                </div>
+                <div class="preview-line">
+                    <span>مبلغ کل:</span>
+                    <strong>{{ final_amount|intcomma }} ریال</strong>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" id="close-preview-btn" onclick="closePreviewModal()">انصراف</button> 
+                    <button type="button" class="submit-btn" id="confirm-order-btn">تایید و ثبت نهایی</button>
+                </div>
+                <input type="hidden" name="confirm" value="true">
+            </div>
+        {% endif %}
+    </div>
+</div>
+
 <script>
     function toggleMenu() {
         document.getElementById('menu').classList.toggle('active');
         document.getElementById('overlay').classList.toggle('active');
+    }
+
+    function openTradeModal(type, id, title) {
+        document.getElementById('modalProductId').value = id;
+        document.getElementById('modalTradeType').value = type;
+        document.getElementById('itemNameField').innerText = title;
+
+        if (type === 'buy') {
+            document.getElementById('modalTitle').innerText = 'فرم خرید';
+            document.getElementById('amountField').style.display = 'block';
+            document.getElementById('quantityField').style.display = 'none';
+            document.querySelector('input[name="amount"]').setAttribute('required', '');
+            document.querySelector('input[name="quantity"]').removeAttribute('required');
+        } else {
+            document.getElementById('modalTitle').innerText = 'فرم فروش';
+            document.getElementById('amountField').style.display = 'none';
+            document.getElementById('quantityField').style.display = 'block';
+            document.querySelector('input[name="quantity"]').setAttribute('required', '');
+            document.querySelector('input[name="amount"]').removeAttribute('required');
+        }
+
+        document.getElementById('tradeModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('tradeModal').classList.remove('active');
+    }
+
+    function closePreviewModal() {
+        document.getElementById('previewModal').classList.remove('active');
+        document.getElementById('previewModalBody').innerHTML = '';
     }
 
     function formatAndBlink(element, newValue) {
@@ -396,6 +641,89 @@
     document.addEventListener('DOMContentLoaded', () => {
         fetchPrices();
         setInterval(fetchPrices, 5000);
+
+        const tradeForm = document.getElementById('tradeForm');
+        const previewModal = document.getElementById('previewModal');
+        const previewModalBody = document.getElementById('previewModalBody');
+        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+
+        tradeForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(tradeForm);
+
+            try {
+                const response = await fetch(tradeForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const fragment = doc.querySelector('#preview-fragment');
+
+                if (!fragment) {
+                    console.error('تگ پیش‌نمایش در پاسخ یافت نشد.');
+                    return;
+                }
+
+                previewModalBody.innerHTML = fragment.outerHTML;
+                closeModal();
+                previewModal.classList.add('active');
+
+                bindPreviewActions(tradeForm.action);
+
+            } catch (error) {
+                console.error('درخواست لود پیش‌فاکتور با خطا مواجه شد:', error);
+            }
+        });
+
+        function bindPreviewActions(actionUrl) {
+            const confirmBtn = document.getElementById('confirm-order-btn');
+            const cancelBtn = document.getElementById('close-preview-btn');
+            const fragment = document.getElementById('preview-fragment');
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', closePreviewModal);
+            }
+
+            if (confirmBtn && fragment) {
+                confirmBtn.addEventListener('click', async function () {
+                    const confirmData = new FormData();
+                    confirmData.append('csrfmiddlewaretoken', csrfToken);
+                    confirmData.append('product', fragment.dataset.productId);
+                    confirmData.append('trade_type', fragment.dataset.tradeType);
+                    confirmData.append('amount', fragment.dataset.amount);
+                    confirmData.append('quantity', fragment.dataset.quantity);
+                    confirmData.append('confirm', 'true');
+
+                    try {
+                        const response = await fetch(actionUrl, {
+                            method: 'POST',
+                            body: confirmData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            credentials: 'same-origin'
+                        });
+
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                            return;
+                        }
+
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('ثبت نهایی سفارش با خطا مواجه شد:', error);
+                    }
+                });
+            }
+        }
     });
 </script>
 </body>

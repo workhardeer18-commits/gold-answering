@@ -1,6 +1,8 @@
-from celery.schedules import crontab
+import logging
 from pathlib import Path
+
 import environ
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,7 +15,6 @@ env_file = BASE_DIR / ".env"
 if env_file.exists():
     environ.Env.read_env(env_file)
 
-
 # SECURITY
 SECRET_KEY = env("SECRET_KEY", default="unsafe-secret-key")
 
@@ -22,7 +23,6 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
-
 
 # Applications
 
@@ -75,8 +75,6 @@ DATABASES = {
     )
 }
 
-
-
 AUTH_USER_MODEL = 'UMS.User'
 LOGIN_URL = 'do_login'
 
@@ -102,7 +100,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -131,5 +128,52 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     },
 # }
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
 
+    "formatters": {
+        "default": {
+            "format": "[{levelname}] {asctime} {name}: {message}",
+            "style": "{",
+        },
+    },
 
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+
+        "OMS": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+
+        "UMS": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+
+        # Celery logs (if you enable Celery)
+        "celery": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
