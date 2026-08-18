@@ -1,13 +1,24 @@
+import threading
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import connection, transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
 from OMS.models.base_price import BasePrice
 from OMS.models.category_product_mazaneh import CategoryProductMazaneh
 from OMS.models.order import Order
 from OMS.models.product import Product
+
+
+def expire_order_task(order_id):
+    try:
+        Order.objects.filter(id=order_id, status="pending").update(status="rejected")
+    except Exception as e:
+        print(f"Error expiring order {order_id}: {e}")
+    finally:
+        connection.close()
 
 
 def get_user_specific_prices(user, product) -> dict | None:
@@ -74,19 +85,14 @@ def create_order(request):
         )
         return redirect("user_dashboard")
 
-
     # خرید
     if trade_type == "buy":
-
         raw_amount = request.POST.get("amount", "0")
-
         try:
             amount = Decimal(raw_amount)
-
         except (InvalidOperation, ValueError, TypeError):
             messages.error(request, "مبلغ نامعتبر است.")
             return redirect("user_dashboard")
-
 
         final_price = user_prices["price_to_buy"]
 
@@ -94,22 +100,16 @@ def create_order(request):
             messages.error(request, "قیمت در دسترس نیست.")
             return redirect("user_dashboard")
 
-
         quantity = amount / final_price
-
 
     # فروش
     elif trade_type == "sell":
-
         raw_quantity = request.POST.get("quantity", "0")
-
         try:
             quantity = Decimal(raw_quantity)
-
         except (InvalidOperation, ValueError, TypeError):
             messages.error(request, "مقدار طلا نامعتبر است.")
             return redirect("user_dashboard")
-
 
         final_price = user_prices["price_to_sell"]
 
@@ -117,19 +117,15 @@ def create_order(request):
             messages.error(request, "قیمت در دسترس نیست.")
             return redirect("user_dashboard")
 
-
         amount = quantity * final_price
-
 
     else:
         messages.error(request, "نوع معامله نامعتبر است.")
         return redirect("user_dashboard")
 
-
     # ثبت نهایی سفارش
     if "confirm" in request.POST:
-
-        Order.objects.create(
+        order = Order.objects.create(
             user=request.user,
             product=product,
             amount=amount,
@@ -140,6 +136,11 @@ def create_order(request):
             status="pending"
         )
 
+        # فعال‌سازی تایمر ۳۰ ثانیه‌ای برای رد خودکار
+        t = threading.Timer(30.0, expire_order_task, args=[order.id])
+        t.daemon = True
+        t.start()
+
         messages.success(
             request,
             "سفارش با موفقیت ثبت شد."
@@ -147,9 +148,7 @@ def create_order(request):
 
         return redirect("user_dashboard")
 
-
     # نمایش پیش فاکتور داخل همان داشبورد
-
     context = {
         "show_result": True,
         "final_price": final_price,
@@ -160,7 +159,6 @@ def create_order(request):
         "product": product,
         "trade_type": trade_type,
     }
-
 
     return render(
         request,

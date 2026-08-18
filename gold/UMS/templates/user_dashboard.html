@@ -471,9 +471,6 @@
         {% for product in products %}
             <div class="price-card">
                 <div class="item-header">{{ product.title }}</div>
-                <div class="base-price" id="base-price-{{ product.id }}">قیمت
-                    پایه: {{ product.current_base_price|default:"--"|intcomma }} ریال
-                </div>
                 <div class="price-row">
                     <div class="buy">
                         <small>خرید</small>
@@ -483,10 +480,7 @@
                         <small>فروش</small>
                         <span id="price-sell-{{ product.id }}">{{ product.display_sell_price|default:"--" }}</span>
                     </div>
-                    <div class="main">
-                        <small>اصلی</small>
-                        <span id="price-main-{{ product.id }}">--</span>
-                    </div>
+                    
                 </div>
                 <div class="card-actions">
                     <button class="card-buy" onclick="openTradeModal('buy', '{{ product.id }}', '{{ product.title }}')">
