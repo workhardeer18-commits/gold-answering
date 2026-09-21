@@ -39,7 +39,7 @@
         body {
             background: var(--bg);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         a {
@@ -53,7 +53,7 @@
             background: var(--header-bg);
             border-bottom: 1px solid var(--item-border);
             z-index: 1000;
-            height: 80px;
+            height: 65px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -68,14 +68,14 @@
 
         .logo {
             color: var(--gold);
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 900;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
 
         .menu-btn {
             cursor: pointer;
-            padding: 10px;
+            padding: 8px 12px;
             background: #1a1d26;
             border-radius: 8px;
             border: 1px solid var(--gold-border-hover);
@@ -83,10 +83,10 @@
 
         nav {
             position: fixed;
-            top: 80px;
+            top: 65px;
             right: -250px;
             width: 250px;
-            height: calc(100vh - 80px);
+            height: calc(100vh - 65px);
             background: #0f1320;
             transition: 0.3s;
             z-index: 999;
@@ -101,7 +101,7 @@
         nav a {
             display: block;
             color: #fff;
-            padding: 15px;
+            padding: 12px;
             border-bottom: 1px solid var(--item-border);
             transition: 0.2s;
         }
@@ -124,124 +124,121 @@
         }
 
         main {
-            padding: 40px 20px;
-            max-width: 1200px;
+            padding: 20px 15px;
+            max-width: 1250px;
             margin: 0 auto;
         }
 
         .section-title {
             text-align: center;
             color: var(--gold);
-            margin-bottom: 30px;
-            font-size: 1.5rem;
+            margin-bottom: 16px;
+            font-size: 1.25rem;
             font-weight: 800;
         }
 
-        .prices {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
+       .prices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 
-        .price-card {
-            border: 1px solid var(--gold);
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            transition: 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+.price-card {
+    width: 100%;
+    min-height: 52px;
+    border: 1px solid var(--gold);
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 5px 8px;
 
-        .item-header {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--gold);
-            margin-bottom: 5px;
-            text-align: center;
-            border-bottom: 1px solid var(--item-border);
-            padding-bottom: 10px;
-        }
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
 
-        .base-price {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            opacity: 0.7;
-        }
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
 
-        .price-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+.item-header {
+    flex: 1.3;
+    min-width: 90px;
 
-        .price-row div {
-            flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border: 1px solid transparent;
-            transition: border-color 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 70px;
-        }
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: bold;
 
-        .price-row .sell {
-            background: rgba(214, 91, 111, 0.1);
-            color: var(--sell-btn);
-            border-color: rgba(214, 91, 111, 0.2);
-        }
+    text-align: right;
 
-        .price-row .buy {
-            background: rgba(60, 198, 104, 0.1);
-            color: var(--buy-btn);
-            border-color: rgba(60, 198, 104, 0.2);
-        }
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-        .price-row .main {
-            background: rgba(240, 195, 107, 0.1);
-            color: var(--gold);
-            border-color: rgba(240, 195, 107, 0.2);
-        }
+/* قیمت خرید و فروش */
+.price-box {
+    flex: 1;
+    min-width: 105px;
+    height: 40px;
 
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: auto;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-        .card-actions button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #fff;
-            transition: 0.3s ease;
-            font-size: 0.9rem;
-        }
+    border-radius: 6px;
+    font-weight: bold;
+}
 
-        .card-buy {
-            background: var(--buy-btn);
-        }
+.price-box small {
+    font-size: 0.62rem;
+    margin-bottom: 1px;
+    opacity: 0.8;
+}
 
-        .card-sell {
-            background: var(--sell-btn);
-        }
+.price-box span {
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
 
+.price-box.buy {
+    background: rgba(60, 198, 104, 0.1);
+    color: var(--buy-btn);
+    border: 1px solid rgba(60, 198, 104, 0.2);
+}
+
+.price-box.sell {
+    background: rgba(214, 91, 111, 0.1);
+    color: var(--sell-btn);
+    border: 1px solid rgba(214, 91, 111, 0.2);
+}
+
+/* دکمه خرید و فروش */
+.price-card > button {
+    flex: 0 0 60px;
+    height: 36px;
+
+    border: none;
+    border-radius: 6px;
+
+    color: white;
+    font-size: 0.72rem;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.card-buy {
+    background: var(--buy-btn);
+}
+
+.card-sell {
+    background: var(--sell-btn);
+}
+        
+
+       
         .card-actions button:hover {
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
         .card-buy:hover {
@@ -260,7 +257,7 @@
             align-items: center;
             justify-content: center;
             z-index: 2000;
-            padding: 20px;
+            padding: 15px;
         }
 
         .modal.active {
@@ -270,26 +267,26 @@
         .modal-content {
             background: var(--card-bg);
             border: 1px solid var(--modal-border);
-            border-radius: 20px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 450px;
-            padding: 25px;
+            max-width: 420px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .modal h2 {
             color: var(--gold);
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
             font-weight: 800;
         }
 
         label {
             display: block;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
             color: #aaa;
         }
 
@@ -297,10 +294,10 @@
             width: 100%;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
             color: #fff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: border-color 0.2s ease;
         }
 
@@ -310,28 +307,28 @@
         }
 
         .info-text {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: #777;
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .modal-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         .submit-btn {
             flex: 2;
             background: var(--buy-btn);
             border: none;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s ease;
-            font-size: 1rem;
+            transition: 0.2s ease;
+            font-size: 0.95rem;
         }
 
         .submit-btn:hover {
@@ -342,12 +339,12 @@
             flex: 1;
             background: var(--cancel-btn-bg);
             border: none;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             color: var(--cancel-btn-text);
             cursor: pointer;
-            transition: 0.3s ease;
-            font-size: 1rem;
+            transition: 0.2s ease;
+            font-size: 0.95rem;
         }
 
         .cancel-btn:hover {
@@ -357,9 +354,9 @@
         .preview-line {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid var(--item-border);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .preview-line:last-child {
@@ -389,65 +386,208 @@
                 background: rgba(240, 195, 107, 0.0);
             }
         }
+/* =========================================
+   رسپانسیو تبلت و موبایل
+   ترتیب:
+   نام محصول | قیمت خرید | خرید | قیمت فروش | فروش
+   ========================================= */
 
-        @media (max-width: 768px) {
-            .prices {
-                grid-template-columns: 1fr;
-            }
+@media (max-width: 768px) {
 
-            .logo {
-                font-size: 1.5rem;
-            }
+    /* هدر */
+    header {
+        height: 60px;
+    }
 
-            nav {
-                width: 220px;
-            }
+    .logo {
+        font-size: 1.3rem;
+    }
 
-            main {
-                padding: 30px 15px;
-            }
+    nav {
+        top: 60px;
+        height: calc(100vh - 60px);
+        width: 200px;
+    }
 
-            .section-title {
-                font-size: 1.3rem;
-                margin-bottom: 25px;
-            }
+    /* محتوای اصلی */
+    main {
+        padding: 10px 6px;
+    }
 
-            .price-card {
-                padding: 18px;
-            }
+    .section-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
 
-            .item-header {
-                font-size: 1.2rem;
-            }
+    /* لیست محصولات */
+    .prices {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 
-            .price-row div {
-                padding: 10px;
-                min-height: 60px;
-                font-size: 1rem;
-            }
+    /* کارت محصول */
+    .price-card {
+        width: 100%;
+        min-height: 46px;
 
-            .card-actions button {
-                padding: 10px;
-                font-size: 0.85rem;
-            }
+        padding: 3px 5px;
+        gap: 4px;
 
-            .modal-content {
-                padding: 20px;
-            }
+        border-radius: 7px;
 
-            .modal h2 {
-                font-size: 1.3rem;
-            }
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
 
-            .modal-buttons {
-                margin-top: 20px;
-            }
+    /* نام محصول */
+    .item-header {
+    flex: 1.5;
+    min-width: 95px;
 
-            .submit-btn, .cancel-btn {
-                padding: 12px;
-                font-size: 0.95rem;
-            }
-        }
+    color: var(--gold);
+    font-size: 0.72rem;
+    font-weight: bold;
+
+    text-align: right;
+
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+
+    line-height: 1.2;
+}
+
+    /* قیمت خرید و فروش */
+    .price-box {
+        flex: 1;
+        min-width: 70px;
+        height: 36px;
+
+        padding: 2px 3px;
+
+        border-radius: 6px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        font-size: 0.65rem;
+    }
+
+    /* عنوان بالای قیمت */
+    .price-box small {
+        font-size: 0.53rem;
+        line-height: 1.1;
+
+        margin-bottom: 1px;
+    }
+
+    /* عدد قیمت */
+    .price-box span {
+        font-size: 0.64rem;
+        line-height: 1.1;
+
+        white-space: nowrap;
+    }
+
+    /* دکمه های خرید و فروش */
+    .price-card > button {
+        flex: 0 0 43px;
+
+        height: 31px;
+
+        padding: 2px 3px;
+
+        border-radius: 5px;
+
+        font-size: 0.62rem;
+        font-weight: bold;
+    }
+
+    /* فرم مودال */
+    .modal-content {
+        padding: 16px;
+    }
+
+    .modal h2 {
+        font-size: 1.15rem;
+        margin-bottom: 12px;
+    }
+
+    .modal-buttons {
+        margin-top: 15px;
+    }
+
+    .submit-btn,
+    .cancel-btn {
+        padding: 10px;
+        font-size: 0.88rem;
+    }
+}
+
+
+/* =========================================
+   موبایل‌های خیلی کوچک
+   ========================================= */
+
+@media (max-width: 380px) {
+
+    main {
+        padding: 8px 4px;
+    }
+
+    .prices {
+        gap: 4px;
+    }
+
+    .price-card {
+        min-height: 43px;
+        padding: 2px 3px;
+        gap: 3px;
+    }
+
+    /* نام محصول */
+    .item-header {
+        flex: 1.1;
+        min-width: 50px;
+        font-size: 0.65rem;
+    }
+
+    /* قیمت ها */
+    .price-box {
+        flex: 1;
+        min-width: 62px;
+        height: 34px;
+
+        padding: 2px;
+    }
+
+    .price-box small {
+        font-size: 0.49rem;
+    }
+
+    .price-box span {
+        font-size: 0.59rem;
+    }
+
+    /* دکمه ها */
+    .price-card > button {
+        flex: 0 0 40px;
+        height: 29px;
+
+        font-size: 0.58rem;
+        padding: 2px;
+    }
+
+    .section-title {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+}
+       
     </style>
 </head>
 <body>
@@ -470,31 +610,34 @@
         {% if products %}
         {% for product in products %}
             <div class="price-card">
-                <div class="item-header">{{ product.title }}</div>
-                <div class="price-row">
-                    <div class="buy">
-                        <small>خرید</small>
-                        <span id="price-buy-{{ product.id }}">{{ product.display_buy_price|default:"--" }}</span>
-                    </div>
-                    <div class="sell">
-                        <small>فروش</small>
-                        <span id="price-sell-{{ product.id }}">{{ product.display_sell_price|default:"--" }}</span>
-                    </div>
-                    
-                </div>
-                <div class="card-actions">
-                    <button class="card-buy" onclick="openTradeModal('buy', '{{ product.id }}', '{{ product.title }}')">
-                        خرید
-                    </button>
-                    <button class="card-sell"
-                            onclick="openTradeModal('sell', '{{ product.id }}', '{{ product.title }}')">فروش
-                    </button>
-                </div>
-            </div>
-        {% empty %}
-            <div style="text-align:center; grid-column: 1/-1; padding: 50px; color: #94a3b8;">
-                <p>هنوز محصولی ثبت نشده است.</p>
-            </div>
+
+    <div class="item-header">
+        {{ product.title }}
+    </div>
+
+    <div class="price-box buy">
+        <span id="price-buy-{{ product.id }}">
+            {{ product.display_buy_price|default:"--" }}
+        </span>
+    </div>
+
+    <button class="card-buy"
+            onclick="openTradeModal('buy', '{{ product.id }}', '{{ product.title }}')">
+        خرید
+    </button>
+
+    <div class="price-box sell">
+        <span id="price-sell-{{ product.id }}">
+            {{ product.display_sell_price|default:"--" }}
+        </span>
+    </div>
+
+    <button class="card-sell"
+            onclick="openTradeModal('sell', '{{ product.id }}', '{{ product.title }}')">
+        فروش
+    </button>
+
+</div>
         {% endfor %}
         {% endif %}
     </section>
@@ -504,7 +647,7 @@
 <div id="tradeModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle">فرم معامله</h2>
-        <p id="itemNameField" style="text-align:center; color: var(--gold); margin-bottom: 10px;"></p>
+        <p id="itemNameField" style="text-align:center; color: var(--gold); margin-bottom: 10px; font-weight: bold;"></p>
         <form id="tradeForm" action="{% url 'create_order' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="product" id="modalProductId">
@@ -512,7 +655,7 @@
 
             <div id="amountField">
                 <label>مبلغ معامله (ریال)</label>
-                <input type="number" name="amount" placeholder="مثلاً 50,000,000" required>
+                <input type="text" name="amount" id="amountInput" placeholder="مثلاً 50,000,000" inputmode="numeric" autocomplete="off" required>
                 <p class="info-text">مبلغ نهایی بر اساس قیمت لحظه‌ای محاسبه خواهد شد.</p>
             </div>
 
@@ -591,6 +734,11 @@
             document.querySelector('input[name="amount"]').removeAttribute('required');
         }
 
+        const amountInput = document.getElementById('amountInput');
+        if (amountInput && amountInput.value) {
+            amountInput.value = formatNumberWithCommas(amountInput.value);
+        }
+
         document.getElementById('tradeModal').classList.add('active');
     }
 
@@ -632,6 +780,11 @@
             });
     }
 
+    function formatNumberWithCommas(value) {
+        let number = String(value ?? '').replace(/\D/g, "");
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         fetchPrices();
         setInterval(fetchPrices, 5000);
@@ -641,10 +794,23 @@
         const previewModalBody = document.getElementById('previewModalBody');
         const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value;
 
+        const amountInput = document.getElementById('amountInput');
+        if (amountInput) {
+            amountInput.addEventListener('input', function (e) {
+                e.target.value = formatNumberWithCommas(e.target.value);
+                e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+            });
+        }
+
         tradeForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
             const formData = new FormData(tradeForm);
+
+            if (formData.has('amount')) {
+                const raw = formData.get('amount') || '';
+                formData.set('amount', String(raw).replace(/,/g, ''));
+            }
 
             try {
                 const response = await fetch(tradeForm.action, {
@@ -667,6 +833,30 @@
                 }
 
                 previewModalBody.innerHTML = fragment.outerHTML;
+
+                const previewLines = previewModalBody.querySelectorAll('.preview-line strong');
+                previewLines.forEach(el => {
+                    let text = el.innerText;
+                    
+                    if (text.includes('ریال')) {
+                        let val = text.replace(/[^0-9.]/g, ''); 
+                        if (val) {
+                            el.innerText = Number(val).toLocaleString('en-US', {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2
+                            }) + ' ریال';
+                        }
+                    } else if (text.includes('گرم')) {
+                        let val = text.replace(/[^0-9.]/g, '');
+                        if (val) {
+                            el.innerText = Number(val).toLocaleString('en-US', {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 3
+                            }) + ' گرم';
+                        }
+                    }
+                });
+
                 closeModal();
                 previewModal.classList.add('active');
 
@@ -720,5 +910,6 @@
         }
     });
 </script>
+
 </body>
 </html>
