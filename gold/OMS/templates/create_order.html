@@ -70,7 +70,6 @@ h2{
 
 .result-box{
   background:rgba(255,255,255,.03);
-  
   border-radius:12px;
   padding:20px;
   margin:25px 0;
@@ -109,6 +108,14 @@ h2{
   cursor:pointer;
   background:var(--buy-btn);
   color:#fff;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:disabled {
+  background:#555 !important;
+  color:#888 !important;
+  cursor:not-allowed;
+  opacity:0.6;
 }
 
 .cancel-btn{
@@ -120,9 +127,11 @@ h2{
   cursor:pointer;
   background:#333;
   color:#ccc;
+  text-align:center;
+  text-decoration:none;
 }
 
-.submit-btn:hover{
+.submit-btn:hover:not(:disabled){
   opacity:.85;
 }
 
@@ -130,8 +139,59 @@ h2{
   background:#444;
 }
 
-/* Alerts */
+/* Timer & Progress Bar Styles */
+.timer-container {
+  margin: 15px 0 20px 0;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px dashed rgba(240, 195, 107, 0.4);
+}
 
+.timer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.timer-text {
+  color: #bbb;
+}
+
+.timer-count {
+  color: var(--gold);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: #222633;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0c36b, #3cc668);
+  border-radius: 10px;
+  transition: width 1s linear, background-color 0.5s ease;
+}
+
+.timer-expired-msg {
+  display: none;
+  color: #e53935;
+  font-size: 0.88rem;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Alerts */
 .custom-alert{
   padding:15px;
   border-radius:12px;
@@ -160,7 +220,6 @@ h2{
   font-size:20px;
   cursor:pointer;
 }
-
 </style>
 
 
@@ -178,8 +237,7 @@ h2{
 
 <h2>ثبت سفارش جدید</h2>
 
-
-<form method="POST" class="order-form">
+<form method="POST" class="order-form" id="orderConfirmForm">
 {% csrf_token %}
 
 <div class="form-group">
@@ -189,52 +247,56 @@ h2{
 {% if show_result %}
 
 <div class="result-box">
+  <div class="result-item">
+    <span>قیمت نهایی هر واحد</span>
+    <span class="result-value">{{ final_price }}</span>
+  </div>
 
+  <div class="result-item">
+    <span>مقدار طلا</span>
+    <span class="result-value">{{ quantity }}</span>
+  </div>
 
-    
-
-    
-    <div class="result-item">
-<span>قیمت نهایی هر واحد</span>
-<span class="result-value">{{ final_price }}</span>
+  <input type="hidden" name="product" value="{{ product.id }}">
+  <input type="hidden" name="trade_type" value="{{ trade_type }}">
+  <input type="hidden" name="amount" value="{{ amount }}">
+  <input type="hidden" name="quantity" value="{{ quantity }}">
 </div>
 
-<div class="result-item">
-<span>مقدار طلا</span>
-<span class="result-value">{{ quantity }}</span>
-</div>
-
-<input type="hidden" name="product" value="{{ product.id }}">
-<input type="hidden" name="trade_type" value="{{ trade_type }}">
-<input type="hidden" name="amount" value="{{ amount }}">
-<input type="hidden" name="quantity" value="{{ quantity }}">
-
+<!-- Countdown Timer Box -->
+<div class="timer-container" id="timerBox">
+  <div class="timer-header">
+    <span class="timer-text">اعتبار قیمت محاسبه‌شده:</span>
+    <span class="timer-count"><span id="secondsLeft">30</span> ثانیه</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressBar"></div>
+  </div>
+  <div class="timer-expired-msg" id="expiredMsg">
+    مهلت تایید قیمت به پایان رسید. لطفاً مجدداً استعلام بگیرید.
+  </div>
 </div>
 
 <div class="button-group">
-<button type="button"
-        onclick="window.location.href='{% url "user_dashboard" %}'"
-        class="cancel-btn">
-انصراف
-</button>
+  <a href="{% url 'user_dashboard' %}" class="cancel-btn">
+    انصراف
+  </a>
 
-<button type="submit" name="confirm" value="1" class="submit-btn">
-ثبت نهایی سفارش
-</button>
+  <button type="submit" name="confirm" value="1" class="submit-btn" id="confirmOrderBtn">
+    ثبت نهایی سفارش
+  </button>
 </div>
 
-{% else %}
+{% else %}-
 
 <div class="button-group">
-<button type="button"
-        onclick="window.location.href='{% url "user_dashboard" %}'"
-        class="cancel-btn">
-انصراف
-</button>
+  <a href="{% url 'user_dashboard' %}" class="cancel-btn">
+    انصراف
+  </a>
 
-<button type="submit" class="submit-btn">
-محاسبه پیش فاکتور
-</button>
+  <button type="submit" class="submit-btn">
+    محاسبه پیش فاکتور
+  </button>
 </div>
 
 {% endif %}
@@ -242,5 +304,44 @@ h2{
 </form>
 </div>
 </div>
+
+{% if show_result %}
+<script>
+  let totalTime = 30; // ۳۰ ثانیه
+  let timeLeft = totalTime;
+
+  const secondsLeftSpan = document.getElementById('secondsLeft');
+  const progressBar = document.getElementById('progressBar');
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  const expiredMsg = document.getElementById('expiredMsg');
+
+  const timerInterval = setInterval(() => {
+    timeLeft--;
+
+    if (timeLeft >= 0) {
+      secondsLeftSpan.textContent = timeLeft;
+      const progressPercent = (timeLeft / totalTime) * 100;
+      progressBar.style.width = progressPercent + '%';
+
+      // تغییر رنگ در ۱۰ ثانیه پایانی به قرمز
+      if (timeLeft <= 10) {
+        progressBar.style.background = '#d65b6f';
+        secondsLeftSpan.style.color = '#d65b6f';
+      }
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = 'اعتبار قیمت تمام شد';
+      }
+      if (expiredMsg) {
+        expiredMsg.style.display = 'block';
+      }
+    }
+  }, 1000);
+</script>
+{% endif %}
 
 {% endblock %}
