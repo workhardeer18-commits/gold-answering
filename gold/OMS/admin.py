@@ -5,6 +5,10 @@ from OMS.models.base_price import BasePrice
 from OMS.models.category_product_mazaneh import CategoryProductMazaneh
 from OMS.models.order import Order
 from OMS.models.product import Product
+
+
+
+
 from django.contrib import admin
 from .models.site_setting import SiteSetting
 
@@ -147,15 +151,20 @@ class CategoryProductMazanehAdmin(admin.ModelAdmin):
     list_select_related = ("category", "product")
 
 
+from django.contrib import admin
+from .models.site_setting import SiteSetting
+
+
 
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
-    list_display = ('is_trading_active', 'closed_message')
+    list_display = (
+        "id",
+        "is_under_maintenance",
+        "maintenance_message",
+    )
+    list_editable = ("is_under_maintenance",)  # تیک تعطیلات را مستقیم از لیست تغییر بده
 
     def has_add_permission(self, request):
-        # فقط اگر رکوردی وجود نداشته باشد اجازه افزودن می‌دهد
+        # فقط یک رکورد تنظیمات داشته باشیم
         return not SiteSetting.objects.exists()
-
-    def has_delete_permission(self, request, obj=None):
-        # جلوگیری از حذف رکورد تنظیمات
-        return False

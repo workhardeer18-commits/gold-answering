@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>سایت در دست تعمیر است</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Tahoma, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .box {
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            max-width: 500px;
+        }
+        h1 { color: #f59e0b; }
+        p { line-height: 1.8; color: #d1d5db; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>سایت موقتاً غیرفعال است</h1>
+        <p>{{ message }}</p>
+    </div>
+</body>
+</html>

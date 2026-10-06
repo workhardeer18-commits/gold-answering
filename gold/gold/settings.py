@@ -18,7 +18,8 @@ if env_file.exists():
 # SECURITY
 SECRET_KEY = env("SECRET_KEY", default="unsafe-secret-key")
 
-DEBUG = env("DEBUG")
+DEBUG = env.bool("DEBUG", default=True)
+
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
@@ -47,6 +48,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+# اضافه کردن این خط:
+    'OMS.middleware.MaintenanceMiddleware',
 ]
 
 ROOT_URLCONF = 'gold.urls'
@@ -72,7 +75,7 @@ WSGI_APPLICATION = 'gold.wsgi.application'
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
-        default="secret-c901ba7flocalhost:5432/gold"
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
     )
 }
 
