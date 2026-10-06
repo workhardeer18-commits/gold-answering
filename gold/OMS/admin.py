@@ -5,6 +5,8 @@ from OMS.models.base_price import BasePrice
 from OMS.models.category_product_mazaneh import CategoryProductMazaneh
 from OMS.models.order import Order
 from OMS.models.product import Product
+from django.contrib import admin
+from .models.site_setting import SiteSetting
 
 
 class BasePriceInline(admin.TabularInline):
@@ -143,3 +145,17 @@ class CategoryProductMazanehAdmin(admin.ModelAdmin):
     autocomplete_fields = ("category", "product")
     search_fields = ("category__title", "product__title")
     list_select_related = ("category", "product")
+
+
+
+@admin.register(SiteSetting)
+class SiteSettingAdmin(admin.ModelAdmin):
+    list_display = ('is_trading_active', 'closed_message')
+
+    def has_add_permission(self, request):
+        # فقط اگر رکوردی وجود نداشته باشد اجازه افزودن می‌دهد
+        return not SiteSetting.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        # جلوگیری از حذف رکورد تنظیمات
+        return False

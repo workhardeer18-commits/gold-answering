@@ -61,6 +61,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'OMS.context_processors.site_settings',
             ],
         },
     },
@@ -71,7 +72,7 @@ WSGI_APPLICATION = 'gold.wsgi.application'
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
-        default="postgres://postgres:postgres@localhost:5432/gold"
+        default="secret-c901ba7flocalhost:5432/gold"
     )
 }
 

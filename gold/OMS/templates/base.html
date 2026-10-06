@@ -11,10 +11,17 @@
 <body>
 
 <header class="navbar">
+    {% if not site_settings.is_trading_active %}
+    <div class="alert alert-warning text-center">
+        {{ site_settings.closed_message }}
+    </div>
+{% endif %}
+
+
 </header>
 
 <main class="container">
-   
+
 
     {% block content %}{% endblock %}
 </main>
