@@ -21,7 +21,9 @@ def expire_order_task(order_id):
         connection.close()
 
 
-def get_user_specific_prices(user, product) -> dict | None:
+from typing import Optional
+
+def get_user_specific_prices(user, product) -> Optional[dict]:
     base_price_obj = BasePrice.objects.filter(
         product=product
     ).order_by("-created_at").first()
